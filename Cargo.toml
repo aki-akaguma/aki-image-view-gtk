@@ -1,0 +1,72 @@
+[package]
+name = "aki-image-view-gtk"
+version = "0.1.0"
+authors = ["aki <aki.akaguma@hotmail.com>"]
+description = """
+image view gtk gui application
+"""
+keywords = ["image", "photo", "svg", "view", "gtk"]
+categories = ["gui"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+edition = "2018"
+repository = "https://github.com/aki-akaguma/aki-image-view-gtk"
+
+[[bin]]
+name = "aki-image-view-gtk"
+path = "src/main.rs"
+
+[features]
+default = []
+debian_build = []
+
+[dependencies]
+anyhow = "1.0"
+flood-tide = { version="0.2", default-features=true, features=["stop_at_mm"] }
+memx-cdy = "0.1"
+
+toml = "0.5"
+serde = "1.0"
+serde_derive = "1.0"
+
+cairo-rs = "0.14"
+gdk = "0.14"
+gdk-sys = "0.14"
+gdk-pixbuf = "0.14"
+glib = "0.14"
+gio = "0.14"
+
+[dependencies.gtk]
+version = "0.14"
+default-features = false
+features = ["v3_24"]
+
+[dev-dependencies]
+#gtk-test = "0.5"
+#indoc = "1.0"
+#exec-target = "0.2"
+
+[build-dependencies]
+rust-version-info-file = "0.1"
+#rustc_version = "0.4"
+
+[workspace]
+members = [
+    "xtask",
+]
+
+[package.metadata.deb]
+features = ["debian_build"]
+section = "AAA-gui"
+priority = "optional"
+maintainer = "aki <aki.akaguma@hotmail.com>"
+extended-description = """\
+image view gtk gui application.
+"""
+depends = "$auto"
+separate-debug-symbols = true
+assets = [
+    ["target/release/aki-image-view-gtk", "usr/bin/", "755"],
+    ["target/rust-version-info.txt", "usr/share/doc/aki-image-view-gtk/", "644"],
+    ["README.md", "usr/share/doc/aki-image-view-gtk/", "644"],
+]
