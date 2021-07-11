@@ -3,10 +3,11 @@
 //
 
 use gio::prelude::{ApplicationExt, ApplicationExtManual};
-use gtk::prelude::{ContainerExt, GtkWindowExt, OverlayExt, WidgetExt};
+use gtk::prelude::{BuilderExt, BuilderExtManual, GtkApplicationExt, GtkWindowExt, WidgetExt};
 
 use gdk_pixbuf::Pixbuf as GdkPixbuf;
 use glib::Bytes as GlibBytes;
+use gtk::Builder as GtkBuilder;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -16,22 +17,29 @@ use image_area::MyImageArea;
 
 use crate::conf::conf_file::ConfigFile;
 
-pub const WINDOW_DEFAULT_WIDTH: i32 = 400;
-pub const WINDOW_DEFAULT_HEIGHT: i32 = 300;
+pub const WINDOW_DEFAULT_WIDTH: i32 = 640;
+pub const WINDOW_DEFAULT_HEIGHT: i32 = 500;
 
 pub(crate) struct MyData {
     conf_file: Rc<RefCell<ConfigFile>>,
     //
+    builder: GtkBuilder,
     im: MyImageArea,
     sp: gtk::Spinner,
     bytes: Option<GlibBytes>,
     pixbuf: Option<GdkPixbuf>,
 }
 impl MyData {
-    fn new(conf_file: Rc<RefCell<ConfigFile>>, da: gtk::DrawingArea, sp: gtk::Spinner) -> Self {
+    fn new(
+        conf_file: Rc<RefCell<ConfigFile>>,
+        builder: GtkBuilder,
+        da: gtk::DrawingArea,
+        sp: gtk::Spinner,
+    ) -> Self {
         Self {
             conf_file,
             //
+            builder,
             im: MyImageArea::new(da),
             sp,
             bytes: None,
@@ -47,22 +55,18 @@ thread_local!(
 );
 
 fn build_ui(application: &gtk::Application, conf_file: Rc<RefCell<ConfigFile>>) {
-    let window = gtk::ApplicationWindow::new(application);
-    window.set_title("DnD Image Viewer");
-    //window.set_border_width(10);
-    //window.set_position(gtk::WindowPosition::Center);
+    //let builder = gtk::Builder::from_file("ui/ImVm.glade");
+    let builder = gtk::Builder::from_string(include_str!("../../ui/ImVm.glade"));
+    builder.set_application(application);
+    //
+    let window: gtk::ApplicationWindow = builder.object("MainWin").unwrap();
+    let da: gtk::DrawingArea = builder.object("drawing_area_main").unwrap();
+    let sp: gtk::Spinner = builder.object("spinner_main").unwrap();
     window.set_default_size(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
     window.set_size_request(WINDOW_DEFAULT_WIDTH / 4, WINDOW_DEFAULT_HEIGHT / 4);
-    //
-    let da = gtk::DrawingArea::new();
-    let sp = gtk::SpinnerBuilder::new().no_show_all(true).build();
-    //
-    let ov = gtk::Overlay::new();
-    ov.add(&da);
-    ov.add_overlay(&sp);
-    //
-    window.add(&ov);
     window.show_all();
+    //
+    application.add_window(&window);
     //
     {
         let c_conf_file = conf_file.borrow();
@@ -81,7 +85,7 @@ fn build_ui(application: &gtk::Application, conf_file: Rc<RefCell<ConfigFile>>) 
         }
     }
     //
-    let my_data = Rc::new(RefCell::new(MyData::new(conf_file, da, sp)));
+    let my_data = Rc::new(RefCell::new(MyData::new(conf_file, builder, da, sp)));
     //
     UI_GLOBAL.with(move |global| {
         *global.borrow_mut() = Some((my_data, 0));
