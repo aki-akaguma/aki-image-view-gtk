@@ -7,3 +7,6 @@
 
 # My Special files
 z.*
+
+# glade backup
+ui/*~
