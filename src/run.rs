@@ -31,21 +31,6 @@ pub fn run(conf: &CmdOptConf) -> anyhow::Result<()> {
     //
     crate::gui::gui_main(conf_file);
     //
-    /*
-    {
-        let fps = conf.opt_fps;
-        let flags = gio::ApplicationFlags::NON_UNIQUE;
-        let gtk_app = gtk::Application::new(Some("com.github.aki-akaguma.spectrum-sequela"), flags);
-        gtk_app.connect_activate(move |gtk_app| {
-            let mag = mag.clone();
-            let conf_file = conf_file.clone();
-            crate::win::App::new(mag, conf_file, fps)
-                .connect_events(gtk_app)
-                .show_all();
-        });
-        let _ = gtk_app.run();
-    }
-    */
     //
     Ok(())
 }

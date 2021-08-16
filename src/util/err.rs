@@ -21,7 +21,7 @@ pub trait BrokenPipeError {
 impl BrokenPipeError for anyhow::Error {
     fn is_broken_pipe(&self) -> bool {
         my_matches!(self.downcast_ref::<std::io::Error>(),
-            Some(ref ioe) if ioe.kind() == std::io::ErrorKind::BrokenPipe)
+            Some(ioe) if ioe.kind() == std::io::ErrorKind::BrokenPipe)
     }
 }
 

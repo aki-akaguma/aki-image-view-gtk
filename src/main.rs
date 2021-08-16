@@ -1,9 +1,45 @@
-/*
- * gtk+ sample program.
- *
- * cairo clock is wall clock. it is drawn by cairo library.
- *
- * https://gitlab.gnome.org/GNOME/gtkmm-documentation/tree/master/examples/book/drawingarea/clock
+/*!
+image view gtk gui application.
+
+`aki-image-view-gtk` command is gtk image viewer.
+
+* minimum support rustc 1.46.0 (04488afe3 2020-08-24)
+
+# Command help
+
+```text
+aki-image-view-gtk --help
+```
+
+```text
+Usage:
+  aki-image-view-gtk [options]
+
+image view gtk gui application
+
+Options:
+  -c, --config <file>   config file path
+
+  -H, --help        display this help and exit
+  -V, --version     display version information and exit
+  -X <x-options>    x options. try -X help
+```
+
+## Quick install
+
+1. you can install this into cargo bin path:
+
+```text
+cargo install aki-image-view-gtk
+```
+
+2. you can build debian package:
+
+```text
+cargo deb
+```
+
+and install **.deb** into your local repository of debian package.
 */
 
 use flood_tide::HelpVersion;
@@ -16,8 +52,9 @@ mod util;
 const TRY_HELP_MSG: &str = "Try --help for help.";
 
 fn main() {
-    memx_cdy::memx_init(); // fast mem operation.
-                           //
+    // fast mem operation.
+    //memx_cdy::memx_init();
+    //
     let conf = match conf::parse_cmdopts() {
         Ok(conf) => conf,
         Err(errs) => {

@@ -5,45 +5,151 @@
 use gio::prelude::{ApplicationExt, ApplicationExtManual};
 use gtk::prelude::{BuilderExt, BuilderExtManual, GtkApplicationExt, GtkWindowExt, WidgetExt};
 
-use gdk_pixbuf::Pixbuf as GdkPixbuf;
-use glib::Bytes as GlibBytes;
 use gtk::Builder as GtkBuilder;
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::sync::mpsc::Sender;
 
+macro_rules! gui_trace {
+    () => ({
+        #[cfg(feature = "gui_trace")]
+        {
+            {
+                use std::io::Write;
+                //
+                let stderr = std::io::stderr();
+                let mut handle = stderr.lock();
+                let _ = handle.write_fmt(format_args!("\n"));
+            }
+        }
+    });
+    ($fmt:tt) => ({
+        #[cfg(feature = "gui_trace")]
+        {
+            {
+                use std::io::Write;
+                //
+                let stderr = std::io::stderr();
+                let mut handle = stderr.lock();
+                static mut COUNT: u64 = 0;
+                unsafe { COUNT += 1 };
+                let _ = handle.write_fmt(format_args!("{:04} ", unsafe { COUNT }));
+                let _ = handle.write_fmt(format_args!($fmt));
+                let _ = handle.write_fmt(format_args!(" [{}:{}]\n", file!(), line!()));
+            }
+        }
+    });
+    ($fmt:tt, $($arg:tt)*) => ({
+        #[cfg(feature = "gui_trace")]
+        {
+            {
+                use std::io::Write;
+                //
+                let stderr = std::io::stderr();
+                let mut handle = stderr.lock();
+                static mut COUNT: u64 = 0;
+                unsafe { COUNT += 1 };
+                let _ = handle.write_fmt(format_args!("{:04} ", unsafe { COUNT }));
+                let _ = handle.write_fmt(format_args!($fmt, $($arg)*));
+                let _ = handle.write_fmt(format_args!(" [{}:{}]\n", file!(), line!()));
+            }
+        }
+    });
+}
+
+mod guii;
 mod image_area;
-use image_area::MyImageArea;
+mod operation;
+mod render_thr;
+mod zoom;
 
 use crate::conf::conf_file::ConfigFile;
 
 pub const WINDOW_DEFAULT_WIDTH: i32 = 640;
 pub const WINDOW_DEFAULT_HEIGHT: i32 = 500;
 
+const ID_MAIN_WINDOW: &str = "MainWin";
+const ID_MAIN_DRAWING_AREA: &str = "drawing_area_main";
+const ID_MAIN_SCROLLED_WINDOW: &str = "scrolled_window_main";
+const ID_MAIN_VIEWPORT: &str = "viewport_main";
+const ID_MAIN_SPINNER: &str = "spinner_main";
+//const ID_MENU_MAIN: &str = "popup_menu_main";
+const ID_MENU_ZOOM: &str = "popup_menu_zoom";
+const ID_MENU_ITEM_ZOOM_FIT: &str = "popup_menu_item_zoom_fit";
+
+#[cfg(feature = "debian_build")]
+macro_rules! ui_dir {
+    () => {
+        concat!("/usr/share/", env!("CARGO_PKG_NAME"), "/ui/")
+    };
+    ($fnm: expr) => {
+        concat!(ui_dir!(), $fnm)
+    };
+}
+
+#[cfg(not(feature = "debian_build"))]
+macro_rules! ui_dir {
+    () => {
+        "../../ui/"
+    };
+    ($fnm: expr) => {
+        concat!(ui_dir!(), $fnm)
+    };
+}
+
+macro_rules! main_glade_name {
+    () => {
+        "ImVm.glade"
+    };
+}
+macro_rules! menu_glade_name {
+    () => {
+        "Menu.glade"
+    };
+}
+
 pub(crate) struct MyData {
     conf_file: Rc<RefCell<ConfigFile>>,
     //
-    builder: GtkBuilder,
-    im: MyImageArea,
+    tx: Sender<render_thr::RenderThreadMsg>,
+    //
+    _builder: GtkBuilder,
+    im: image_area::MyImageArea,
+    zoom: zoom::MyZoom,
     sp: gtk::Spinner,
-    bytes: Option<GlibBytes>,
-    pixbuf: Option<GdkPixbuf>,
 }
 impl MyData {
     fn new(
         conf_file: Rc<RefCell<ConfigFile>>,
+        tx: Sender<render_thr::RenderThreadMsg>,
         builder: GtkBuilder,
         da: gtk::DrawingArea,
         sp: gtk::Spinner,
     ) -> Self {
+        let da_parent: gtk::ScrolledWindow = builder.object(ID_MAIN_SCROLLED_WINDOW).unwrap();
+        let da_viewport: gtk::Viewport = builder.object(ID_MAIN_VIEWPORT).unwrap();
+        let zoom_menu: gtk::Menu = builder.object(ID_MENU_ZOOM).unwrap();
+        let zoom_menu_item_zoom_fit: gtk::CheckMenuItem =
+            builder.object(ID_MENU_ITEM_ZOOM_FIT).unwrap();
+        let zoom_in_btn: gtk::Button = builder.object("button_zoom_in").unwrap();
+        let zoom_out_btn: gtk::Button = builder.object("button_zoom_out").unwrap();
+        let zoom_entry: gtk::Entry = builder.object("entry_zoom").unwrap();
+        //
         Self {
             conf_file,
+            tx,
             //
-            builder,
-            im: MyImageArea::new(da),
+            _builder: builder,
+            im: image_area::MyImageArea::new(da_parent, da_viewport, da),
+            zoom: zoom::MyZoom::new(
+                zoom_in_btn,
+                zoom_out_btn,
+                zoom_entry,
+                zoom_menu,
+                zoom_menu_item_zoom_fit,
+            ),
             sp,
-            bytes: None,
-            pixbuf: None,
         }
     }
 }
@@ -54,14 +160,36 @@ thread_local!(
     static UI_GLOBAL: RefCell<Option<(Rc<RefCell<MyData>>,i32)>> = RefCell::new(None)
 );
 
-fn build_ui(application: &gtk::Application, conf_file: Rc<RefCell<ConfigFile>>) {
-    //let builder = gtk::Builder::from_file("ui/ImVm.glade");
-    let builder = gtk::Builder::from_string(include_str!("../../ui/ImVm.glade"));
+//
+fn build_ui(
+    application: &gtk::Application,
+    tx: Sender<render_thr::RenderThreadMsg>,
+    conf_file: Rc<RefCell<ConfigFile>>,
+) {
+    let builder = {
+        #[cfg(feature = "debian_build")]
+        {
+            let builder = gtk::Builder::from_file(ui_dir!(main_glade_name!()));
+            builder.add_from_file(ui_dir!(menu_glade_name!())).unwrap();
+            builder
+        }
+        #[cfg(not(feature = "debian_build"))]
+        {
+            let builder = gtk::Builder::from_string(include_str!(ui_dir!(main_glade_name!())));
+            builder
+                .add_from_string(include_str!(ui_dir!(menu_glade_name!())))
+                .unwrap();
+            builder
+        }
+    };
+    //
     builder.set_application(application);
     //
-    let window: gtk::ApplicationWindow = builder.object("MainWin").unwrap();
-    let da: gtk::DrawingArea = builder.object("drawing_area_main").unwrap();
-    let sp: gtk::Spinner = builder.object("spinner_main").unwrap();
+    let window: gtk::ApplicationWindow = builder.object(ID_MAIN_WINDOW).unwrap();
+    let da: gtk::DrawingArea = builder.object(ID_MAIN_DRAWING_AREA).unwrap();
+    let sp: gtk::Spinner = builder.object(ID_MAIN_SPINNER).unwrap();
+    //let menu_main: gtk::Menu = builder.object(ID_MENU_MAIN).unwrap();
+    //
     window.set_default_size(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
     window.set_size_request(WINDOW_DEFAULT_WIDTH / 4, WINDOW_DEFAULT_HEIGHT / 4);
     window.show_all();
@@ -71,6 +199,7 @@ fn build_ui(application: &gtk::Application, conf_file: Rc<RefCell<ConfigFile>>) 
     {
         let c_conf_file = conf_file.borrow();
         if c_conf_file.is_ok() {
+            /*
             let prof = &c_conf_file.conf.default;
             window.move_(prof.geometry_x, prof.geometry_y);
             window.resize(prof.geometry_w, prof.geometry_h);
@@ -82,11 +211,11 @@ fn build_ui(application: &gtk::Application, conf_file: Rc<RefCell<ConfigFile>>) 
             }
             window.set_keep_above(prof.above);
             window.set_keep_below(prof.below);
+            */
         }
     }
     //
-    let my_data = Rc::new(RefCell::new(MyData::new(conf_file, builder, da, sp)));
-    //
+    let my_data = Rc::new(RefCell::new(MyData::new(conf_file, tx, builder, da, sp)));
     UI_GLOBAL.with(move |global| {
         *global.borrow_mut() = Some((my_data, 0));
     });
@@ -95,6 +224,7 @@ fn build_ui(application: &gtk::Application, conf_file: Rc<RefCell<ConfigFile>>) 
         if let Some((ref my_data, _)) = *global.borrow() {
             let a_my_data = my_data.borrow();
             a_my_data.im.setup_connect();
+            a_my_data.zoom.setup_connect();
         }
     });
     //
@@ -144,13 +274,16 @@ fn build_ui(application: &gtk::Application, conf_file: Rc<RefCell<ConfigFile>>) 
 }
 
 pub fn gui_main(conf_file: Rc<RefCell<ConfigFile>>) {
+    let (handle, tx) = render_thr::start_render_thread();
+    //
     let app = gtk::Application::builder()
         .application_id("com.github.aki-akaguma.aki-image-view-gtk")
         .build();
     //
+    let tx_thr = tx.clone();
     app.connect_activate(move |app| {
         let conf_file = conf_file.clone();
-        build_ui(app, conf_file);
+        build_ui(app, tx_thr.clone(), conf_file);
     });
     app.connect_shutdown(|_app| {
         UI_GLOBAL.with(move |global| {
@@ -159,4 +292,7 @@ pub fn gui_main(conf_file: Rc<RefCell<ConfigFile>>) {
     });
     //
     app.run();
+    //
+    tx.send(render_thr::RenderThreadMsg::Quit).unwrap();
+    handle.join().unwrap();
 }
