@@ -1,6 +1,6 @@
 [package]
 name = "aki-image-view-gtk"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 description = """
 image view gtk gui application
@@ -70,4 +70,5 @@ assets = [
     ["target/rust-version-info.txt", "usr/share/doc/aki-image-view-gtk/", "644"],
     ["README.md", "usr/share/doc/aki-image-view-gtk/", "644"],
     ["ui/ImVm.glade", "usr/share/aki-image-view-gtk/ui/", "644"],
+    ["ui/Menu.glade", "usr/share/aki-image-view-gtk/ui/", "644"],
 ]
