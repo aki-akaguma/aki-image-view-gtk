@@ -119,7 +119,7 @@ pub fn parse_cmdopts(a_prog_name: &str, args: &[&str]) -> Result<CmdOptConf, Opt
     }
     //
     {
-        let mut errs = if let Err(errs) = r_errs {
+        let errs = if let Err(errs) = r_errs {
             errs
         } else {
             OptParseErrors::new()
@@ -127,8 +127,8 @@ pub fn parse_cmdopts(a_prog_name: &str, args: &[&str]) -> Result<CmdOptConf, Opt
         //
         if let Some(free) = opt_free {
             if !free.is_empty() {
-                //conf.arg_params.extend(free.iter().map(|s| s.to_string()));
-                errs.push(OptParseError::unexpected_argument(&free[0]));
+                conf.arg_params.extend(free.iter().map(|s| s.to_string()));
+                //errs.push(OptParseError::unexpected_argument(&free[0]));
             }
         };
         if !errs.is_empty() {

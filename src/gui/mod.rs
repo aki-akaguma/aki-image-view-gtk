@@ -1,6 +1,7 @@
 //
 // https://www.ruimo.com/fromId?fromId=130
 //
+use crate::conf::CmdOptConf;
 
 use gio::prelude::{ApplicationExt, ApplicationExtManual};
 use gtk::prelude::{BuilderExt, BuilderExtManual, GtkApplicationExt, GtkWindowExt, WidgetExt};
@@ -273,7 +274,12 @@ fn build_ui(
     });
 }
 
-pub fn gui_main(conf_file: Rc<RefCell<ConfigFile>>) {
+pub fn gui_main(conf: &CmdOptConf, conf_file: Rc<RefCell<ConfigFile>>) {
+    let img_path: String = if !conf.arg_params.is_empty() {
+        conf.arg_params[0].clone()
+    } else {
+        "".to_string()
+    };
     let (handle, tx) = render_thr::start_render_thread();
     //
     let app = gtk::Application::builder()
@@ -284,6 +290,8 @@ pub fn gui_main(conf_file: Rc<RefCell<ConfigFile>>) {
     app.connect_activate(move |app| {
         let conf_file = conf_file.clone();
         build_ui(app, tx_thr.clone(), conf_file);
+        let uri = format!("file:///{}", img_path);
+        operation::ope_open_uri_for_image_file(uri.as_str());
     });
     app.connect_shutdown(|_app| {
         UI_GLOBAL.with(move |global| {
@@ -291,7 +299,8 @@ pub fn gui_main(conf_file: Rc<RefCell<ConfigFile>>) {
         });
     });
     //
-    app.run();
+    //app.run();
+    app.run_with_args::<&str>(&[]);
     //
     tx.send(render_thr::RenderThreadMsg::Quit).unwrap();
     handle.join().unwrap();

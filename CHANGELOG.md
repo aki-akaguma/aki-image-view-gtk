@@ -2,6 +2,8 @@ aki-image-view-gtk TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* add: a support of a image path into command arguments
+
 0.2.1 (2021-08-16)
 =====
 

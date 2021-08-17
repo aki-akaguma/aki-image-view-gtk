@@ -172,6 +172,8 @@ pub(crate) fn setup_connect(
         move |_w, _, _, _, d, _, _| {
         let uris = d.uris();
         if !uris.is_empty() {
+            open_uri_for_image_file(&uris[0]);
+            /*
             // uri (smb:// ***) also correspond
             let file = gio::File::for_uri(&uris[0]);
             file.load_contents_async::<gio::Cancellable,_>(None, move |r|{
@@ -194,6 +196,7 @@ pub(crate) fn setup_connect(
                     }
                 }
             });
+            */
         }
     }));
     //
@@ -439,5 +442,34 @@ pub(crate) fn render_image_on_thread(bytes: &GlibBytes, iwh: Size2Di) {
         glib::source::idle_add_once(move || {
             ope_update_zoom_entry();
         });
+    });
+}
+
+pub(crate) fn open_uri_for_image_file(uri_str: &str) {
+    if uri_str.is_empty() {
+        return;
+    }
+    // uri (smb:// ***) also correspond
+    gui_trace!("open_uri_for_image_file(): '{}'", uri_str);
+    let file = gio::File::for_uri(uri_str);
+    file.load_contents_async::<gio::Cancellable,_>(None, move |r|{
+        match r {
+            Ok((bytes_vec_u8, _opt_etag_out)) => {
+                //gui_trace!("etag_out: {}", _opt_etag_out.to_string());
+                UI_GLOBAL.with(|global| {
+                    if let Some((ref my_data, _)) = *global.borrow() {
+                        {
+                            let mut a_my_data = my_data.borrow_mut();
+                            let bytes = GlibBytes::from_owned(bytes_vec_u8);
+                            a_my_data.im.set_bytes_and_clear(bytes);
+                        }
+                        spawn_render_image(my_data.clone());
+                    }
+                });
+            }
+            Err(err) => {
+                eprintln!("LOAD ERROR: {}", err.to_string());
+            }
+        }
     });
 }

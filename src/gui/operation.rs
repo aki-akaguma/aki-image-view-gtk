@@ -1,5 +1,5 @@
 use super::guii::Size2Di;
-use super::image_area::spawn_render_image;
+use super::image_area::{open_uri_for_image_file, spawn_render_image};
 use super::zoom::{next_zoom_in_level, next_zoom_out_level};
 use super::UI_GLOBAL;
 
@@ -111,4 +111,9 @@ pub(crate) fn ope_update_zoom_entry() {
             }
         }
     });
+}
+
+//
+pub(crate) fn ope_open_uri_for_image_file(uri: &str) {
+    open_uri_for_image_file(uri);
 }

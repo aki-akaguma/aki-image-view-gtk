@@ -29,7 +29,7 @@ pub fn run(conf: &CmdOptConf) -> anyhow::Result<()> {
         Rc::new(RefCell::new(conf_file))
     };
     //
-    crate::gui::gui_main(conf_file);
+    crate::gui::gui_main(conf, conf_file);
     //
     //
     Ok(())
