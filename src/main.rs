@@ -3,7 +3,8 @@ image view gtk gui application.
 
 `aki-image-view-gtk` command is gtk image viewer.
 
-* minimum support rustc 1.46.0 (04488afe3 2020-08-24)
+* minimum support gtk v3_24
+* minimum support rustc 1.51.0 (2fd73fabe 2021-03-23)
 
 # Command help
 

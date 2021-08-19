@@ -449,10 +449,11 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
     if uri_str.is_empty() {
         return;
     }
+    let uri = uri_str.to_string();
     // uri (smb:// ***) also correspond
     gui_trace!("open_uri_for_image_file(): '{}'", uri_str);
     let file = gio::File::for_uri(uri_str);
-    file.load_contents_async::<gio::Cancellable,_>(None, move |r|{
+    file.load_contents_async::<gio::Cancellable, _>(None, move |r| {
         match r {
             Ok((bytes_vec_u8, _opt_etag_out)) => {
                 //gui_trace!("etag_out: {}", _opt_etag_out.to_string());
@@ -468,7 +469,7 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
                 });
             }
             Err(err) => {
-                eprintln!("LOAD ERROR: {}", err.to_string());
+                eprintln!("LOAD ERROR: {}: {}", err.to_string(), uri);
             }
         }
     });

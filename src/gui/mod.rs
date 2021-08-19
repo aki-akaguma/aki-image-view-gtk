@@ -4,7 +4,9 @@
 use crate::conf::CmdOptConf;
 
 use gio::prelude::{ApplicationExt, ApplicationExtManual};
-use gtk::prelude::{BuilderExt, BuilderExtManual, GtkApplicationExt, GtkWindowExt, WidgetExt};
+use gtk::prelude::{
+    BuilderExt, BuilderExtManual, ButtonExt, GtkApplicationExt, GtkWindowExt, WidgetExt,
+};
 
 use gtk::Builder as GtkBuilder;
 
@@ -59,6 +61,7 @@ macro_rules! gui_trace {
     });
 }
 
+mod fich;
 mod guii;
 mod image_area;
 mod operation;
@@ -71,6 +74,7 @@ pub const WINDOW_DEFAULT_WIDTH: i32 = 640;
 pub const WINDOW_DEFAULT_HEIGHT: i32 = 500;
 
 const ID_MAIN_WINDOW: &str = "MainWin";
+const ID_MAIN_FILE_CHOOSER: &str = "MainFileChooser";
 const ID_MAIN_DRAWING_AREA: &str = "drawing_area_main";
 const ID_MAIN_SCROLLED_WINDOW: &str = "scrolled_window_main";
 const ID_MAIN_VIEWPORT: &str = "viewport_main";
@@ -78,6 +82,7 @@ const ID_MAIN_SPINNER: &str = "spinner_main";
 //const ID_MENU_MAIN: &str = "popup_menu_main";
 const ID_MENU_ZOOM: &str = "popup_menu_zoom";
 const ID_MENU_ITEM_ZOOM_FIT: &str = "popup_menu_item_zoom_fit";
+const ID_BUTTON_OPEN: &str = "button_open";
 
 #[cfg(feature = "debian_build")]
 macro_rules! ui_dir {
@@ -119,6 +124,7 @@ pub(crate) struct MyData {
     im: image_area::MyImageArea,
     zoom: zoom::MyZoom,
     sp: gtk::Spinner,
+    fc: fich::MyFileChooser,
 }
 impl MyData {
     fn new(
@@ -130,12 +136,15 @@ impl MyData {
     ) -> Self {
         let da_parent: gtk::ScrolledWindow = builder.object(ID_MAIN_SCROLLED_WINDOW).unwrap();
         let da_viewport: gtk::Viewport = builder.object(ID_MAIN_VIEWPORT).unwrap();
+        //
         let zoom_menu: gtk::Menu = builder.object(ID_MENU_ZOOM).unwrap();
         let zoom_menu_item_zoom_fit: gtk::CheckMenuItem =
             builder.object(ID_MENU_ITEM_ZOOM_FIT).unwrap();
         let zoom_in_btn: gtk::Button = builder.object("button_zoom_in").unwrap();
         let zoom_out_btn: gtk::Button = builder.object("button_zoom_out").unwrap();
         let zoom_entry: gtk::Entry = builder.object("entry_zoom").unwrap();
+        //
+        let fc: gtk::FileChooserDialog = builder.object(ID_MAIN_FILE_CHOOSER).unwrap();
         //
         Self {
             conf_file,
@@ -151,6 +160,7 @@ impl MyData {
                 zoom_menu_item_zoom_fit,
             ),
             sp,
+            fc: fich::MyFileChooser::new(fc),
         }
     }
 }
@@ -190,6 +200,10 @@ fn build_ui(
     let da: gtk::DrawingArea = builder.object(ID_MAIN_DRAWING_AREA).unwrap();
     let sp: gtk::Spinner = builder.object(ID_MAIN_SPINNER).unwrap();
     //let menu_main: gtk::Menu = builder.object(ID_MENU_MAIN).unwrap();
+    let button_open: gtk::Button = builder.object(ID_BUTTON_OPEN).unwrap();
+    button_open.connect_clicked(move |_| {
+        operation::ope_open_file_chooser_dialog();
+    });
     //
     window.set_default_size(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
     window.set_size_request(WINDOW_DEFAULT_WIDTH / 4, WINDOW_DEFAULT_HEIGHT / 4);

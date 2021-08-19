@@ -114,6 +114,21 @@ pub(crate) fn ope_update_zoom_entry() {
 }
 
 //
-pub(crate) fn ope_open_uri_for_image_file(uri: &str) {
-    open_uri_for_image_file(uri);
+pub(crate) fn ope_open_uri_for_image_file(uri_str: &str) {
+    open_uri_for_image_file(uri_str);
+}
+
+//
+pub(crate) fn ope_open_file_chooser_dialog() {
+    UI_GLOBAL.with(|global| {
+        if let Some((ref my_data, _)) = *global.borrow() {
+            {
+                let a_my_data = my_data.borrow();
+                if let Some(filename) = a_my_data.fc.run_open_file() {
+                    let uri = format!("file:///{}", filename);
+                    ope_open_uri_for_image_file(uri.as_str());
+                }
+            }
+        }
+    });
 }
