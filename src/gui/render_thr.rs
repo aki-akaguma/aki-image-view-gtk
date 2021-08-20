@@ -35,10 +35,14 @@ pub fn start_render_thread() -> (std::thread::JoinHandle<()>, Sender<RenderThrea
                         }
                     },
                     Err(TryRecvError::Empty) => {
-                        if let Some((bytes, iwh)) = push_back_buf.pop() {
-                            render_image_on_thread(&bytes, iwh);
+                        if push_back_buf.is_empty() {
+                            break;
+                        } else {
+                            if let Some((bytes, iwh)) = push_back_buf.pop() {
+                                render_image_on_thread(&bytes, iwh);
+                            }
+                            push_back_buf.clear();
                         }
-                        push_back_buf.clear();
                     }
                     Err(TryRecvError::Disconnected) => {
                         break 'loop_main;

@@ -61,7 +61,7 @@ macro_rules! gui_trace {
     });
 }
 
-mod fich;
+mod dia;
 mod guii;
 mod image_area;
 mod operation;
@@ -74,7 +74,6 @@ pub const WINDOW_DEFAULT_WIDTH: i32 = 640;
 pub const WINDOW_DEFAULT_HEIGHT: i32 = 500;
 
 const ID_MAIN_WINDOW: &str = "MainWin";
-const ID_MAIN_FILE_CHOOSER: &str = "MainFileChooser";
 const ID_MAIN_DRAWING_AREA: &str = "drawing_area_main";
 const ID_MAIN_SCROLLED_WINDOW: &str = "scrolled_window_main";
 const ID_MAIN_VIEWPORT: &str = "viewport_main";
@@ -109,6 +108,11 @@ macro_rules! main_glade_name {
         "ImVm.glade"
     };
 }
+macro_rules! dialog_glade_name {
+    () => {
+        "Dialog.glade"
+    };
+}
 macro_rules! menu_glade_name {
     () => {
         "Menu.glade"
@@ -124,7 +128,6 @@ pub(crate) struct MyData {
     im: image_area::MyImageArea,
     zoom: zoom::MyZoom,
     sp: gtk::Spinner,
-    fc: fich::MyFileChooser,
 }
 impl MyData {
     fn new(
@@ -144,8 +147,6 @@ impl MyData {
         let zoom_out_btn: gtk::Button = builder.object("button_zoom_out").unwrap();
         let zoom_entry: gtk::Entry = builder.object("entry_zoom").unwrap();
         //
-        let fc: gtk::FileChooserDialog = builder.object(ID_MAIN_FILE_CHOOSER).unwrap();
-        //
         Self {
             conf_file,
             tx,
@@ -160,7 +161,6 @@ impl MyData {
                 zoom_menu_item_zoom_fit,
             ),
             sp,
-            fc: fich::MyFileChooser::new(fc),
         }
     }
 }
@@ -183,12 +183,18 @@ fn build_ui(
             let builder = gtk::Builder::from_file(ui_dir!(main_glade_name!()));
             builder.add_from_file(ui_dir!(menu_glade_name!())).unwrap();
             builder
+                .add_from_file(ui_dir!(dialog_glade_name!()))
+                .unwrap();
+            builder
         }
         #[cfg(not(feature = "debian_build"))]
         {
             let builder = gtk::Builder::from_string(include_str!(ui_dir!(main_glade_name!())));
             builder
                 .add_from_string(include_str!(ui_dir!(menu_glade_name!())))
+                .unwrap();
+            builder
+                .add_from_string(include_str!(ui_dir!(dialog_glade_name!())))
                 .unwrap();
             builder
         }
@@ -210,6 +216,11 @@ fn build_ui(
     window.show_all();
     //
     application.add_window(&window);
+    //
+    {
+        let builder = builder.clone();
+        dia::init(builder);
+    }
     //
     {
         let c_conf_file = conf_file.borrow();
