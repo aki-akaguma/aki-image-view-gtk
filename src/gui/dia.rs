@@ -1,4 +1,4 @@
-use super::operation::ope_open_uri_for_image_file;
+use crate::gui::mwin::operation::ope_open_uri_for_image_file;
 
 use gtk::prelude::{BuilderExtManual, DialogExt, FileChooserExt, WidgetExt};
 
@@ -32,7 +32,11 @@ impl MyFileChooser {
     pub fn new(builder: GtkBuilder) -> Self {
         let fc: gtk::FileChooserDialog = builder.object(ID_MAIN_FILE_CHOOSER).unwrap();
         //
-        Self { fc, last_dir: None, last_filename: None }
+        Self {
+            fc,
+            last_dir: None,
+            last_filename: None,
+        }
     }
     pub fn run_open_file(&mut self) -> Option<String> {
         if let Some(ref filename) = self.last_filename {

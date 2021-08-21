@@ -8,8 +8,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::operation::{ope_set_zoom_fit, ope_set_zoom_in, ope_set_zoom_level, ope_set_zoom_out};
-use super::MyData;
-use super::UI_GLOBAL;
+use super::MyMainWin;
+use super::UI_MWIN_GLOBAL;
 
 const SCROLL_VIEW_MAX_ZOOM_FACTOR: f32 = 20.0;
 const _SCROLL_VIEW_MIN_ZOOM_FACTOR: f32 = 0.02;
@@ -83,13 +83,13 @@ impl MyZoom {
     }
     //
     pub fn setup_connect(&self) {
-        UI_GLOBAL.with(|global| {
+        UI_MWIN_GLOBAL.with(|global| {
             if let Some((ref my_data, _)) = *global.borrow() {
                 self.setup_connect_0(my_data);
             }
         });
     }
-    fn setup_connect_0(&self, _my_data: &Rc<RefCell<MyData>>) {
+    fn setup_connect_0(&self, _my_data: &Rc<RefCell<MyMainWin>>) {
         let zoom_menu = self.menu.clone();
         self.entry.connect_icon_press(
             move |_entry, icon_pos: EntryIconPosition, event: &gdk::Event| {

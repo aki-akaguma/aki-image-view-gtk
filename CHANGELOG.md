@@ -2,6 +2,8 @@ aki-image-view-gtk TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* refactoring source code
+
 0.2.3 (2021-08-21)
 =====
 

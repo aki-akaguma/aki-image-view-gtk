@@ -11,11 +11,11 @@ use glib::Bytes as GlibBytes;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use super::guii::Size2Di;
 use super::operation::{ope_setup_scroll_window_content_wh, ope_update_zoom_entry};
 use super::render_thr::RenderThreadMsg;
-use super::MyData;
-use super::UI_GLOBAL;
+use super::MyMainWin;
+use super::UI_MWIN_GLOBAL;
+use crate::gui::guii::Size2Di;
 
 const MAX_PIXELS: i32 = 128 * 1024 * 1024 / 4;
 
@@ -48,7 +48,7 @@ impl MyImageArea {
         }
     }
     pub fn setup_connect(&self) {
-        UI_GLOBAL.with(|global| {
+        UI_MWIN_GLOBAL.with(|global| {
             if let Some((ref my_data, _)) = *global.borrow() {
                 setup_connect(&self.scrw, &self.da, my_data);
             }
@@ -159,7 +159,7 @@ impl MyImageArea {
 pub(crate) fn setup_connect(
     scrw: &gtk::ScrolledWindow,
     da: &gtk::DrawingArea,
-    my_data: &Rc<RefCell<MyData>>,
+    my_data: &Rc<RefCell<MyMainWin>>,
 ) {
     //
     let targets = vec![gtk::TargetEntry::new(
@@ -173,30 +173,6 @@ pub(crate) fn setup_connect(
         let uris = d.uris();
         if !uris.is_empty() {
             open_uri_for_image_file(&uris[0]);
-            /*
-            // uri (smb:// ***) also correspond
-            let file = gio::File::for_uri(&uris[0]);
-            file.load_contents_async::<gio::Cancellable,_>(None, move |r|{
-                match r {
-                    Ok((bytes_vec_u8, _opt_etag_out)) => {
-                        //gui_trace!("etag_out: {}", _opt_etag_out.to_string());
-                        UI_GLOBAL.with(|global| {
-                            if let Some((ref my_data, _)) = *global.borrow() {
-                                {
-                                    let mut a_my_data = my_data.borrow_mut();
-                                    let bytes = GlibBytes::from_owned(bytes_vec_u8);
-                                    a_my_data.im.set_bytes_and_clear(bytes);
-                                }
-                                spawn_render_image(my_data.clone());
-                            }
-                        });
-                    }
-                    Err(err) => {
-                        eprintln!("LOAD ERROR: {}", err.to_string());
-                    }
-                }
-            });
-            */
         }
     }));
     //
@@ -225,7 +201,7 @@ pub(crate) fn setup_connect(
     }));
 }
 
-fn da_on_draw(widget: &gtk::DrawingArea, cr: &cairo::Context, my_data: &Rc<RefCell<MyData>>) {
+fn da_on_draw(widget: &gtk::DrawingArea, cr: &cairo::Context, my_data: &Rc<RefCell<MyMainWin>>) {
     let (clip_x, clip_y, clip_w, clip_h) = if let Ok((x1, y1, x2, y2)) = cr.clip_extents() {
         (x1 as i32, y1 as i32, (x2 - x1) as i32, (y2 - y1) as i32)
     } else {
@@ -299,7 +275,7 @@ fn da_on_draw(widget: &gtk::DrawingArea, cr: &cairo::Context, my_data: &Rc<RefCe
     }
 }
 
-fn check_and_do_zoom_fit(my_data: Rc<RefCell<MyData>>) {
+fn check_and_do_zoom_fit(my_data: Rc<RefCell<MyMainWin>>) {
     {
         let a_my_data = my_data.borrow();
         if a_my_data.im.is_zoom_fit() {
@@ -317,7 +293,7 @@ fn check_and_do_zoom_fit(my_data: Rc<RefCell<MyData>>) {
     spawn_render_image(my_data);
 }
 
-pub(crate) fn spawn_render_image(my_data: Rc<RefCell<MyData>>) {
+pub(crate) fn spawn_render_image(my_data: Rc<RefCell<MyMainWin>>) {
     let has_image_info = {
         let a_my_data = my_data.borrow();
         a_my_data.im.has_image_info
@@ -351,7 +327,7 @@ fn setup_image_info(bytes: &GlibBytes) {
     };
     //
     glib::idle_add_once(move || {
-        UI_GLOBAL.with(|global| {
+        UI_MWIN_GLOBAL.with(|global| {
             if let Some((ref my_data, _)) = *global.borrow() {
                 {
                     let mut a_my_data = my_data.borrow_mut();
@@ -364,7 +340,7 @@ fn setup_image_info(bytes: &GlibBytes) {
     });
 }
 
-fn spawn_render_image_0(my_data: Rc<RefCell<MyData>>) {
+fn spawn_render_image_0(my_data: Rc<RefCell<MyMainWin>>) {
     let mut a_my_data = my_data.borrow_mut();
     if let Some(bytes) = &a_my_data.im.bytes {
         let zoomed_wh = a_my_data.im.zoomed_width_height();
@@ -429,7 +405,7 @@ pub(crate) fn render_image_on_thread(bytes: &GlibBytes, iwh: Size2Di) {
         #[rustfmt::skip]
         let pixbuf = GdkPixbuf::from_bytes(
             &bytes, colorspace, has_alpha, bits_per_sample, width, height, rowstride);
-        UI_GLOBAL.with(|global| {
+        UI_MWIN_GLOBAL.with(|global| {
             if let Some((ref my_data, _)) = *global.borrow() {
                 let mut a_my_data = my_data.borrow_mut();
                 a_my_data.im.pixbuf = Some(pixbuf);
@@ -457,7 +433,7 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
         match r {
             Ok((bytes_vec_u8, _opt_etag_out)) => {
                 //gui_trace!("etag_out: {}", _opt_etag_out.to_string());
-                UI_GLOBAL.with(|global| {
+                UI_MWIN_GLOBAL.with(|global| {
                     if let Some((ref my_data, _)) = *global.borrow() {
                         {
                             let mut a_my_data = my_data.borrow_mut();

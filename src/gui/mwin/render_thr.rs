@@ -4,8 +4,8 @@ use std::sync::mpsc::TryRecvError;
 
 use glib::Bytes as GlibBytes;
 
-use super::guii::Size2Di;
 use super::image_area::render_image_on_thread;
+use crate::gui::guii::Size2Di;
 
 pub enum RenderThreadMsg {
     Quit,

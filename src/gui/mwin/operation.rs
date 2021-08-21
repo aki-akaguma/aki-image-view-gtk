@@ -1,12 +1,12 @@
-use super::dia::open_file_chooser;
-use super::guii::Size2Di;
 use super::image_area::{open_uri_for_image_file, spawn_render_image};
 use super::zoom::{next_zoom_in_level, next_zoom_out_level};
-use super::UI_GLOBAL;
+use super::UI_MWIN_GLOBAL;
+use crate::gui::dia::open_file_chooser;
+use crate::gui::guii::Size2Di;
 
 //
 pub(crate) fn ope_setup_scroll_window_content_wh(alc_wh: Size2Di) {
-    UI_GLOBAL.with(|global| {
+    UI_MWIN_GLOBAL.with(|global| {
         if let Some((ref my_data, _)) = *global.borrow() {
             let a_my_data = my_data.borrow();
             a_my_data.im.set_max_content_wh(alc_wh);
@@ -16,7 +16,7 @@ pub(crate) fn ope_setup_scroll_window_content_wh(alc_wh: Size2Di) {
 
 //
 pub(crate) fn ope_set_zoom_fit() {
-    UI_GLOBAL.with(|global| {
+    UI_MWIN_GLOBAL.with(|global| {
         if let Some((ref my_data, _)) = *global.borrow() {
             {
                 let mut a_my_data = my_data.borrow_mut();
@@ -30,7 +30,7 @@ pub(crate) fn ope_set_zoom_fit() {
 
 //
 pub(crate) fn ope_set_zoom_level(level: f32) {
-    UI_GLOBAL.with(|global| {
+    UI_MWIN_GLOBAL.with(|global| {
         if let Some((ref my_data, _)) = *global.borrow() {
             let is_zoom_ok = {
                 let mut a_my_data = my_data.borrow_mut();
@@ -50,7 +50,7 @@ pub(crate) fn ope_set_zoom_level(level: f32) {
 
 //
 pub(crate) fn ope_set_zoom_in() {
-    UI_GLOBAL.with(|global| {
+    UI_MWIN_GLOBAL.with(|global| {
         if let Some((ref my_data, _)) = *global.borrow() {
             let is_zoom_ok = {
                 let mut a_my_data = my_data.borrow_mut();
@@ -76,7 +76,7 @@ pub(crate) fn ope_set_zoom_in() {
 
 //
 pub(crate) fn ope_set_zoom_out() {
-    UI_GLOBAL.with(|global| {
+    UI_MWIN_GLOBAL.with(|global| {
         if let Some((ref my_data, _)) = *global.borrow() {
             let is_zoom_ok = {
                 let mut a_my_data = my_data.borrow_mut();
@@ -103,7 +103,7 @@ pub(crate) fn ope_set_zoom_out() {
 
 //
 pub(crate) fn ope_update_zoom_entry() {
-    UI_GLOBAL.with(|global| {
+    UI_MWIN_GLOBAL.with(|global| {
         if let Some((ref my_data, _)) = *global.borrow() {
             {
                 let a_my_data = my_data.borrow();
