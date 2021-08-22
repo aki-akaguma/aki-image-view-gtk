@@ -23,7 +23,7 @@ macro_rules! gui_trace {
             }
         }
     });
-    ($fmt:tt) => ({
+    ($fmt:expr) => ({
         #[cfg(feature = "gui_trace")]
         {
             {
@@ -39,7 +39,7 @@ macro_rules! gui_trace {
             }
         }
     });
-    ($fmt:tt, $($arg:tt)*) => ({
+    ($fmt:expr, $($arg:tt)*) => ({
         #[cfg(feature = "gui_trace")]
         {
             {
@@ -137,6 +137,7 @@ macro_rules! menu_glade_name {
 
 #[cfg(feature = "debian_build")]
 fn create_gtk_builder() -> gtk::Builder {
+    use gtk::prelude::BuilderExtManual;
     let builder = gtk::Builder::from_file(ui_dir!(main_glade_name!()));
     builder.add_from_file(ui_dir!(menu_glade_name!())).unwrap();
     builder

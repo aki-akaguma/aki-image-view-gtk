@@ -301,6 +301,7 @@ pub(crate) fn spawn_render_image(my_data: Rc<RefCell<MyMainWin>>) {
     if !has_image_info {
         let a_my_data = my_data.borrow();
         if let Some(bytes) = &a_my_data.im.bytes {
+            gui_trace!("spawn_render_image(): image info SPAWN");
             let bytes = bytes.clone();
             std::thread::spawn(move || {
                 setup_image_info(&bytes);
@@ -325,10 +326,13 @@ fn setup_image_info(bytes: &GlibBytes) {
             }
         }
     };
+    gui_trace!("setup_image_info(): rendered");
     //
     glib::idle_add_once(move || {
+        //glib::timeout_add_once(std::time::Duration::from_millis(0), move || {
         UI_MWIN_GLOBAL.with(|global| {
             if let Some((ref my_data, _)) = *global.borrow() {
+                gui_trace!("setup_image_info(): my_data");
                 {
                     let mut a_my_data = my_data.borrow_mut();
                     a_my_data.im.orig_wh = (width, height).into();
@@ -429,24 +433,24 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
     // uri (smb:// ***) also correspond
     gui_trace!("open_uri_for_image_file(): '{}'", uri_str);
     let file = gio::File::for_uri(uri_str);
-    file.load_contents_async::<gio::Cancellable, _>(None, move |r| {
-        match r {
-            Ok((bytes_vec_u8, _opt_etag_out)) => {
-                //gui_trace!("etag_out: {}", _opt_etag_out.to_string());
-                UI_MWIN_GLOBAL.with(|global| {
-                    if let Some((ref my_data, _)) = *global.borrow() {
-                        {
-                            let mut a_my_data = my_data.borrow_mut();
-                            let bytes = GlibBytes::from_owned(bytes_vec_u8);
-                            a_my_data.im.set_bytes_and_clear(bytes);
-                        }
-                        spawn_render_image(my_data.clone());
+    file.load_contents_async::<gio::Cancellable, _>(None, move |r| match r {
+        Ok((bytes_vec_u8, _opt_etag_out)) => {
+            gui_trace!("etag_out: {:?}", _opt_etag_out);
+            UI_MWIN_GLOBAL.with(|global| {
+                if let Some((ref my_data, _)) = *global.borrow() {
+                    gui_trace!("open_uri_for_image_file(): my_data borrow: IN");
+                    {
+                        let mut a_my_data = my_data.borrow_mut();
+                        let bytes = GlibBytes::from_owned(bytes_vec_u8);
+                        a_my_data.im.set_bytes_and_clear(bytes);
                     }
-                });
-            }
-            Err(err) => {
-                eprintln!("LOAD ERROR: {}: {}", err.to_string(), uri);
-            }
+                    gui_trace!("open_uri_for_image_file(): my_data borrow: OUT");
+                    spawn_render_image(my_data.clone());
+                }
+            });
+        }
+        Err(err) => {
+            eprintln!("LOAD ERROR: {}: {}", err.to_string(), uri);
         }
     });
 }

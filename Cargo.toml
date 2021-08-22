@@ -1,6 +1,6 @@
 [package]
 name = "aki-image-view-gtk"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 description = """
 image view gtk gui application

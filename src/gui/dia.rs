@@ -1,6 +1,8 @@
+use crate::gui::guii::Size2Di;
 use crate::gui::mwin::operation::ope_open_uri_for_image_file;
 
-use gtk::prelude::{BuilderExtManual, DialogExt, FileChooserExt, WidgetExt};
+use gdk_pixbuf::Pixbuf;
+use gtk::prelude::{BuilderExtManual, DialogExt, FileChooserExt, ImageExt, WidgetExt};
 
 use gtk::Builder as GtkBuilder;
 
@@ -9,6 +11,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 const ID_MAIN_FILE_CHOOSER: &str = "MainFileChooser";
+const ID_PREV_IMAGE: &str = "prev_image1";
 
 // gtk & thread_local
 // https://gitlab.com/susurrus/gattii/-/blob/master/src/bin/gattii.rs
@@ -27,15 +30,24 @@ pub(crate) struct MyFileChooser {
     fc: gtk::FileChooserDialog,
     last_dir: Option<PathBuf>,
     last_filename: Option<PathBuf>,
+    _img: gtk::Image,
 }
 impl MyFileChooser {
     pub fn new(builder: GtkBuilder) -> Self {
         let fc: gtk::FileChooserDialog = builder.object(ID_MAIN_FILE_CHOOSER).unwrap();
+        let img: gtk::Image = builder.object(ID_PREV_IMAGE).unwrap();
+        {
+            let img = img.clone();
+            fc.connect_selection_changed(move |fc| {
+                fc_on_selection_changed(fc, &img);
+            });
+        }
         //
         Self {
             fc,
             last_dir: None,
             last_filename: None,
+            _img: img,
         }
     }
     pub fn run_open_file(&mut self) -> Option<String> {
@@ -67,6 +79,61 @@ impl MyFileChooser {
         };
         self.fc.hide();
         opt_filename.map(|path| path.to_string_lossy().to_string())
+    }
+}
+
+fn fc_on_selection_changed(fc: &gtk::FileChooserDialog, img: &gtk::Image) {
+    macro_rules! _fn_nm {
+        () => {
+            "fc.connect_selection_changed()"
+        };
+    }
+    let parent = img.parent().unwrap();
+    let parent_wh: Size2Di = (parent.allocated_width(), parent.allocated_height()).into();
+    let ok = if let Some(ref path_buf) = fc.preview_filename() {
+        let ok = match Pixbuf::from_file_at_size(path_buf, parent_wh.w(), -1) {
+            Ok(pixbuf) => {
+                if pixbuf.height() <= parent_wh.h() {
+                    //gui_trace!(concat!(_fn_nm!(), ": {:?}: {}"), path_buf, parent_wh);
+                    img.set_pixbuf(Some(&pixbuf));
+                    true
+                } else {
+                    false
+                }
+            }
+            Err(_err) => {
+                #[rustfmt::skip]
+                gui_trace!(concat!(_fn_nm!(), ": Pixbuf::from_file_at_size(): {}"), _err);
+                false
+            }
+        };
+        if ok {
+            true
+        } else {
+            match Pixbuf::from_file_at_size(path_buf, -1, parent_wh.h()) {
+                Ok(pixbuf) => {
+                    if pixbuf.width() <= parent_wh.w() {
+                        //gui_trace!(concat!(_fn_nm!(), ": {:?}: {}"), path_buf, parent_wh);
+                        img.set_pixbuf(Some(&pixbuf));
+                        true
+                    } else {
+                        false
+                    }
+                }
+                Err(_err) => {
+                    #[rustfmt::skip]
+                    gui_trace!(concat!(_fn_nm!(), ": Pixbuf::from_file_at_size(): {}"), _err);
+                    false
+                }
+            }
+        }
+    } else {
+        false
+    };
+    if !ok {
+        //#[rustfmt::skip]
+        //gui_trace!(concat!(_fn_nm!(), ": icon: {:?}: {}"), img.icon_name(), parent_wh);
+        img.set_icon_name(None);
     }
 }
 

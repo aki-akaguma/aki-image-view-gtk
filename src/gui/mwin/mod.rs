@@ -194,8 +194,10 @@ pub(crate) fn app_on_activate(
     img_path: String,
 ) {
     build_ui(builder, app, tx_thr, conf_file);
-    let uri = format!("file:///{}", img_path);
-    operation::ope_open_uri_for_image_file(uri.as_str());
+    if !img_path.is_empty() {
+        let uri = format!("file:///{}", img_path);
+        operation::ope_open_uri_for_image_file(uri.as_str());
+    }
 }
 
 //
