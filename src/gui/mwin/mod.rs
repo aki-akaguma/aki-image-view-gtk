@@ -4,7 +4,7 @@
 use crate::conf::conf_file::ConfigFile;
 use crate::gui::dia;
 
-use gtk::prelude::{BuilderExtManual, ButtonExt, GtkApplicationExt, GtkWindowExt, WidgetExt};
+use gtk::prelude::{BuilderExtManual, GtkApplicationExt, GtkWindowExt, WidgetExt};
 
 use gtk::Builder as GtkBuilder;
 
@@ -12,12 +12,13 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Sender;
 
+mod act;
 pub mod image_area;
 pub mod operation;
 pub mod render_thr;
 pub mod zoom;
 
-pub const WINDOW_DEFAULT_WIDTH: i32 = 640;
+pub const WINDOW_DEFAULT_WIDTH: i32 = 720;
 pub const WINDOW_DEFAULT_HEIGHT: i32 = 500;
 
 const ID_MAIN_WINDOW: &str = "MainWin";
@@ -25,10 +26,8 @@ const ID_MAIN_DRAWING_AREA: &str = "drawing_area_main";
 const ID_MAIN_SCROLLED_WINDOW: &str = "scrolled_window_main";
 const ID_MAIN_VIEWPORT: &str = "viewport_main";
 const ID_MAIN_SPINNER: &str = "spinner_main";
-//const ID_MENU_MAIN: &str = "popup_menu_main";
-const ID_MENU_ZOOM: &str = "popup_menu_zoom";
-const ID_MENU_ITEM_ZOOM_FIT: &str = "popup_menu_item_zoom_fit";
-const ID_BUTTON_OPEN: &str = "button_open";
+const ID_POPOVER_MENU_ZOOM_BOX: &str = "popover_menu_zoom_box";
+const ID_POPOVER_MENU_ZOOM_ITEM_ZOOM_FIT: &str = "popover_menu_zoom_item_zoom_fit";
 
 // gtk & thread_local
 // https://gitlab.com/susurrus/gattii/-/blob/master/src/bin/gattii.rs
@@ -56,11 +55,10 @@ impl MyMainWin {
         let da_parent: gtk::ScrolledWindow = builder.object(ID_MAIN_SCROLLED_WINDOW).unwrap();
         let da_viewport: gtk::Viewport = builder.object(ID_MAIN_VIEWPORT).unwrap();
         //
-        let zoom_menu: gtk::Menu = builder.object(ID_MENU_ZOOM).unwrap();
-        let zoom_menu_item_zoom_fit: gtk::CheckMenuItem =
-            builder.object(ID_MENU_ITEM_ZOOM_FIT).unwrap();
-        let zoom_in_btn: gtk::Button = builder.object("button_zoom_in").unwrap();
-        let zoom_out_btn: gtk::Button = builder.object("button_zoom_out").unwrap();
+        let zoom_popover_menu_box: gtk::Box = builder.object(ID_POPOVER_MENU_ZOOM_BOX).unwrap();
+        let zoom_popover_menu_item_zoom_fit: gtk::CheckButton =
+            builder.object(ID_POPOVER_MENU_ZOOM_ITEM_ZOOM_FIT).unwrap();
+        //
         let zoom_entry: gtk::Entry = builder.object("entry_zoom").unwrap();
         //
         Self {
@@ -69,11 +67,9 @@ impl MyMainWin {
             //
             im: image_area::MyImageArea::new(da_parent, da_viewport, da),
             zoom: zoom::MyZoom::new(
-                zoom_in_btn,
-                zoom_out_btn,
                 zoom_entry,
-                zoom_menu,
-                zoom_menu_item_zoom_fit,
+                zoom_popover_menu_box,
+                zoom_popover_menu_item_zoom_fit,
             ),
             sp,
         }
@@ -91,17 +87,15 @@ fn build_ui(
     let window: gtk::ApplicationWindow = builder.object(ID_MAIN_WINDOW).unwrap();
     let da: gtk::DrawingArea = builder.object(ID_MAIN_DRAWING_AREA).unwrap();
     let sp: gtk::Spinner = builder.object(ID_MAIN_SPINNER).unwrap();
-    //let menu_main: gtk::Menu = builder.object(ID_MENU_MAIN).unwrap();
-    let button_open: gtk::Button = builder.object(ID_BUTTON_OPEN).unwrap();
-    button_open.connect_clicked(move |_| {
-        operation::ope_open_file_chooser_dialog();
-    });
     //
     window.set_default_size(WINDOW_DEFAULT_WIDTH, WINDOW_DEFAULT_HEIGHT);
     window.set_size_request(WINDOW_DEFAULT_WIDTH / 4, WINDOW_DEFAULT_HEIGHT / 4);
     window.show_all();
     //
     application.add_window(&window);
+    //
+    super::act::insert_app_action_group(&window);
+    act::insert_mwin_action_group(&window);
     //
     {
         let builder = builder.clone();
@@ -136,7 +130,6 @@ fn build_ui(
         if let Some((ref my_data, _)) = *global.borrow() {
             let a_my_data = my_data.borrow();
             a_my_data.im.setup_connect();
-            a_my_data.zoom.setup_connect();
         }
     });
     //

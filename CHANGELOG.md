@@ -2,6 +2,11 @@ aki-image-view-gtk TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* chg: the menu ui was refactored.
+* add: gio action support
+* chg: buttons of ui to stock buttons.
+* add: main menu.
+
 0.2.4 (2021-08-22)
 =====
 

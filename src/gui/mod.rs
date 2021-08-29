@@ -58,6 +58,7 @@ macro_rules! gui_trace {
 }
 
 //
+mod act;
 mod dia;
 mod guii;
 mod mwin;
@@ -129,17 +130,11 @@ macro_rules! dialog_glade_name {
         "Dialog.glade"
     };
 }
-macro_rules! menu_glade_name {
-    () => {
-        "Menu.glade"
-    };
-}
 
 #[cfg(feature = "debian_build")]
 fn create_gtk_builder() -> gtk::Builder {
     use gtk::prelude::BuilderExtManual;
     let builder = gtk::Builder::from_file(ui_dir!(main_glade_name!()));
-    builder.add_from_file(ui_dir!(menu_glade_name!())).unwrap();
     builder
         .add_from_file(ui_dir!(dialog_glade_name!()))
         .unwrap();
@@ -149,9 +144,6 @@ fn create_gtk_builder() -> gtk::Builder {
 #[cfg(not(feature = "debian_build"))]
 fn create_gtk_builder() -> gtk::Builder {
     let builder = gtk::Builder::from_string(include_str!(ui_dir!(main_glade_name!())));
-    builder
-        .add_from_string(include_str!(ui_dir!(menu_glade_name!())))
-        .unwrap();
     builder
         .add_from_string(include_str!(ui_dir!(dialog_glade_name!())))
         .unwrap();
