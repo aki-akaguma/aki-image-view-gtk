@@ -1,6 +1,7 @@
-use gtk::prelude::{ButtonExt, ContainerExt, EntryExt, ToggleButtonExt, WidgetExt};
+use glib::ToVariant;
+use gtk::prelude::{ActionableExt, ButtonExt, ContainerExt, EntryExt, ToggleButtonExt, WidgetExt};
 
-use super::operation::{ope_set_zoom_fit, ope_set_zoom_level};
+use super::acti;
 
 const SCROLL_VIEW_MAX_ZOOM_FACTOR: f32 = 20.0;
 const _SCROLL_VIEW_MIN_ZOOM_FACTOR: f32 = 0.02;
@@ -11,6 +12,8 @@ pub(crate) struct MyZoom {
     entry: gtk::Entry,
     popover_menu_box: gtk::Box,
     popover_menu_item_zoom_fit: gtk::CheckButton,
+    button_zoom_fit: gtk::ToggleButton,
+    flg_zoom_fit: bool,
 }
 
 impl MyZoom {
@@ -18,21 +21,38 @@ impl MyZoom {
         entry: gtk::Entry,
         popover_menu_box: gtk::Box,
         popover_menu_item_zoom_fit: gtk::CheckButton,
+        button_zoom_fit: gtk::ToggleButton,
     ) -> Self {
         let a = Self {
             entry,
             popover_menu_box,
             popover_menu_item_zoom_fit,
+            button_zoom_fit,
+            flg_zoom_fit: true,
         };
         a.setup_menu_items();
         a
     }
     //
-    pub fn set_zoom_fit(&self) {
-        //self.menu_item_zoom_fit.set_active(true);
+    pub fn is_zoom_fit(&self) -> bool {
+        self.flg_zoom_fit
     }
-    pub fn set_zoom_level(&self, _level: f32) {
+    //
+    pub fn set_zoom_fit(&mut self) {
+        self.popover_menu_item_zoom_fit
+            .set_action_target_value(Some(&true.to_variant()));
+        self.button_zoom_fit
+            .set_action_target_value(Some(&true.to_variant()));
+        self.popover_menu_item_zoom_fit.set_active(true);
+        self.flg_zoom_fit = true;
+    }
+    pub fn unset_zoom_fit(&mut self) {
+        self.popover_menu_item_zoom_fit
+            .set_action_target_value(Some(&false.to_variant()));
+        self.button_zoom_fit
+            .set_action_target_value(Some(&false.to_variant()));
         self.popover_menu_item_zoom_fit.set_active(false);
+        self.flg_zoom_fit = false;
     }
     pub fn update_zoom_entry(&self, level: f32) {
         let s = format_zoom_value(level);
@@ -40,14 +60,10 @@ impl MyZoom {
     }
     //
     fn setup_menu_items(&self) {
-        self.popover_menu_item_zoom_fit.connect_active_notify(
-            move |check_button: &gtk::CheckButton| {
-                if check_button.is_active() {
-                    gui_trace!("popover_menu_item_zoom_fit.connect_active_notify()");
-                    ope_set_zoom_fit();
-                }
-            },
-        );
+        self.popover_menu_item_zoom_fit
+            .set_action_target_value(Some(&true.to_variant()));
+        self.button_zoom_fit
+            .set_action_target_value(Some(&true.to_variant()));
         //
         for level in &ZOOM_LEVELS {
             let level = *level;
@@ -59,7 +75,7 @@ impl MyZoom {
             let item = gtk::ModelButton::builder().text(name.as_str()).build();
             item.connect_clicked(move |_| {
                 gui_trace!("item.connect_clicked:{}", level);
-                ope_set_zoom_level(level);
+                acti::ope_set_zoom_level(level);
             });
             item.show();
             self.popover_menu_box.add(&item);

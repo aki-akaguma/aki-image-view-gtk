@@ -1,5 +1,5 @@
 use crate::gui::guii::Size2Di;
-use crate::gui::mwin::operation::ope_open_uri_for_image_file;
+use crate::gui::mwin::acti;
 
 use gdk_pixbuf::Pixbuf;
 use gtk::prelude::{BuilderExtManual, DialogExt, FileChooserExt, ImageExt, WidgetExt};
@@ -144,7 +144,7 @@ pub(crate) fn open_file_chooser() {
                 let mut a_my_fich = my_fich.borrow_mut();
                 if let Some(filename) = a_my_fich.run_open_file() {
                     let uri = format!("file:///{}", filename);
-                    ope_open_uri_for_image_file(uri.as_str());
+                    acti::ope_open_uri_for_image_file(uri.as_str());
                 }
             }
         }

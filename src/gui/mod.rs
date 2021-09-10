@@ -58,7 +58,7 @@ macro_rules! gui_trace {
 }
 
 //
-mod act;
+mod acti;
 mod dia;
 mod guii;
 mod mwin;
@@ -122,12 +122,12 @@ macro_rules! ui_dir {
 
 macro_rules! main_glade_name {
     () => {
-        "ImVm.glade"
+        "Mwin.glade"
     };
 }
 macro_rules! dialog_glade_name {
     () => {
-        "Dialog.glade"
+        "Fcdia.glade"
     };
 }
 

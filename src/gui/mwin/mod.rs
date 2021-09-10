@@ -12,13 +12,12 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::mpsc::Sender;
 
-mod act;
+pub mod acti;
 pub mod image_area;
-pub mod operation;
 pub mod render_thr;
 pub mod zoom;
 
-pub const WINDOW_DEFAULT_WIDTH: i32 = 720;
+pub const WINDOW_DEFAULT_WIDTH: i32 = 820;
 pub const WINDOW_DEFAULT_HEIGHT: i32 = 500;
 
 const ID_MAIN_WINDOW: &str = "MainWin";
@@ -28,6 +27,7 @@ const ID_MAIN_VIEWPORT: &str = "viewport_main";
 const ID_MAIN_SPINNER: &str = "spinner_main";
 const ID_POPOVER_MENU_ZOOM_BOX: &str = "popover_menu_zoom_box";
 const ID_POPOVER_MENU_ZOOM_ITEM_ZOOM_FIT: &str = "popover_menu_zoom_item_zoom_fit";
+const ID_BUTTON_ZOOM_FIT: &str = "button_zoom_fit";
 
 // gtk & thread_local
 // https://gitlab.com/susurrus/gattii/-/blob/master/src/bin/gattii.rs
@@ -55,6 +55,7 @@ impl MyMainWin {
         let da_parent: gtk::ScrolledWindow = builder.object(ID_MAIN_SCROLLED_WINDOW).unwrap();
         let da_viewport: gtk::Viewport = builder.object(ID_MAIN_VIEWPORT).unwrap();
         //
+        let button_zoom_fit: gtk::ToggleButton = builder.object(ID_BUTTON_ZOOM_FIT).unwrap();
         let zoom_popover_menu_box: gtk::Box = builder.object(ID_POPOVER_MENU_ZOOM_BOX).unwrap();
         let zoom_popover_menu_item_zoom_fit: gtk::CheckButton =
             builder.object(ID_POPOVER_MENU_ZOOM_ITEM_ZOOM_FIT).unwrap();
@@ -70,6 +71,7 @@ impl MyMainWin {
                 zoom_entry,
                 zoom_popover_menu_box,
                 zoom_popover_menu_item_zoom_fit,
+                button_zoom_fit,
             ),
             sp,
         }
@@ -93,9 +95,6 @@ fn build_ui(
     window.show_all();
     //
     application.add_window(&window);
-    //
-    super::act::insert_app_action_group(&window);
-    act::insert_mwin_action_group(&window);
     //
     {
         let builder = builder.clone();
@@ -176,6 +175,9 @@ fn build_ui(
         });
         gtk::Inhibit(false)
     });
+    //
+    super::acti::insert_app_action_group(&window);
+    acti::insert_mwin_action_group(&window);
 }
 
 //
@@ -189,7 +191,7 @@ pub(crate) fn app_on_activate(
     build_ui(builder, app, tx_thr, conf_file);
     if !img_path.is_empty() {
         let uri = format!("file:///{}", img_path);
-        operation::ope_open_uri_for_image_file(uri.as_str());
+        acti::ope_open_uri_for_image_file(uri.as_str());
     }
 }
 

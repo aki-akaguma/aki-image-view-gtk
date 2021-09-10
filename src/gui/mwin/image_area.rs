@@ -11,7 +11,7 @@ use glib::Bytes as GlibBytes;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use super::operation::{ope_setup_scroll_window_content_wh, ope_update_zoom_entry};
+use super::acti;
 use super::render_thr::RenderThreadMsg;
 use super::MyMainWin;
 use super::UI_MWIN_GLOBAL;
@@ -189,7 +189,7 @@ pub(crate) fn setup_connect(
                 gui_trace!("parent.connect_size_allocate(): {} != {}", scrw_wh, vipo_wh);
                 let _ = glib::idle_add_once(move || {
                     //gui_trace!("glib::idle_add(): ope_setup_scroll_window_content_wh()");
-                    ope_setup_scroll_window_content_wh(scrw_wh);
+                    acti::ope_setup_scroll_window_content_wh(scrw_wh);
                 });
             }
         }
@@ -284,7 +284,7 @@ fn check_and_do_zoom_fit(my_data: Rc<RefCell<MyMainWin>>) {
             if !(da_wh.w() <= scrw_wh.w() && da_wh.h() <= scrw_wh.h()) {
                 gui_trace!("check_and_do_zoom_fit(): {} <= {}", scrw_wh, da_wh);
                 let _ = glib::idle_add_once(move || {
-                    ope_setup_scroll_window_content_wh(scrw_wh);
+                    acti::ope_setup_scroll_window_content_wh(scrw_wh);
                 });
                 return;
             }
@@ -420,7 +420,7 @@ pub(crate) fn render_image_on_thread(bytes: &GlibBytes, iwh: Size2Di) {
         });
         //
         glib::source::idle_add_once(move || {
-            ope_update_zoom_entry();
+            acti::ope_update_zoom_entry();
         });
     });
 }
