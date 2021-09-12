@@ -14,6 +14,7 @@ pub(crate) fn insert_mwin_action_group<T: IsA<Widget>>(wdg: &T) {
     }));
     ag.add_action(&create_mwin_action("reload", |_ac, _var| {
         gui_trace!("ACTION: mwin.reload");
+        ope_reload_file();
     }));
     //
     ag.add_action(&create_mwin_action("zoom_in", |_ac, _var| {
@@ -56,7 +57,7 @@ fn create_mwin_action_state_bool<F: Fn(&SimpleAction, Option<&Variant>) + 'stati
 use super::image_area::{open_uri_for_image_file, spawn_render_image};
 use super::zoom::{next_zoom_in_level, next_zoom_out_level};
 use super::UI_MWIN_GLOBAL;
-use crate::gui::dia::open_file_chooser;
+use crate::gui::fcdia::open_file_chooser;
 use crate::gui::guii::Size2Di;
 
 //
@@ -197,10 +198,27 @@ pub(crate) fn ope_update_zoom_entry() {
 
 //
 pub(crate) fn ope_open_uri_for_image_file(uri_str: &str) {
+    if uri_str.is_empty() {
+        return;
+    }
     open_uri_for_image_file(uri_str);
 }
 
 //
 fn ope_open_file_chooser_dialog() {
     open_file_chooser();
+}
+//
+fn ope_reload_file() {
+    UI_MWIN_GLOBAL.with(|global| {
+        if let Some((ref my_data, _)) = *global.borrow() {
+            let uri_s = {
+                let a_my_data = my_data.borrow();
+                a_my_data.uri_s.clone()
+            };
+            let _ = glib::idle_add_once(move || {
+                open_uri_for_image_file(&uri_s);
+            });
+        }
+    });
 }

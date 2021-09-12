@@ -2,7 +2,8 @@
 // https://www.ruimo.com/fromId?fromId=130
 //
 use crate::conf::conf_file::ConfigFile;
-use crate::gui::dia;
+use crate::gui::abdia;
+use crate::gui::fcdia;
 
 use gtk::prelude::{BuilderExtManual, GtkApplicationExt, GtkWindowExt, WidgetExt};
 
@@ -37,8 +38,8 @@ thread_local!(
 
 pub(crate) struct MyMainWin {
     conf_file: Rc<RefCell<ConfigFile>>,
-    //
     tx: Sender<render_thr::RenderThreadMsg>,
+    uri_s: String,
     //
     im: image_area::MyImageArea,
     zoom: zoom::MyZoom,
@@ -64,6 +65,7 @@ impl MyMainWin {
         //
         Self {
             conf_file,
+            uri_s: "".into(),
             tx,
             //
             im: image_area::MyImageArea::new(da_parent, da_viewport, da),
@@ -98,7 +100,11 @@ fn build_ui(
     //
     {
         let builder = builder.clone();
-        dia::init(builder);
+        fcdia::init(builder);
+    }
+    {
+        let builder = builder.clone();
+        abdia::init(builder);
     }
     //
     {

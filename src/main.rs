@@ -54,7 +54,7 @@ const TRY_HELP_MSG: &str = "Try --help for help.";
 
 fn main() {
     // fast mem operation.
-    //memx_cdy::memx_init();
+    memx_cdy::memx_init();
     //
     let conf = match conf::parse_cmdopts() {
         Ok(conf) => conf,

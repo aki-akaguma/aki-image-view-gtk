@@ -443,6 +443,7 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
                         let mut a_my_data = my_data.borrow_mut();
                         let bytes = GlibBytes::from_owned(bytes_vec_u8);
                         a_my_data.im.set_bytes_and_clear(bytes);
+                        a_my_data.uri_s = uri;
                     }
                     gui_trace!("open_uri_for_image_file(): my_data borrow: OUT");
                     spawn_render_image(my_data.clone());

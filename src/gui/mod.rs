@@ -58,8 +58,9 @@ macro_rules! gui_trace {
 }
 
 //
+mod abdia;
 mod acti;
-mod dia;
+mod fcdia;
 mod guii;
 mod mwin;
 
@@ -125,9 +126,14 @@ macro_rules! main_glade_name {
         "Mwin.glade"
     };
 }
-macro_rules! dialog_glade_name {
+macro_rules! filechoose_dialog_glade_name {
     () => {
         "Fcdia.glade"
+    };
+}
+macro_rules! about_dialog_glade_name {
+    () => {
+        "Abdia.glade"
     };
 }
 
@@ -136,7 +142,10 @@ fn create_gtk_builder() -> gtk::Builder {
     use gtk::prelude::BuilderExtManual;
     let builder = gtk::Builder::from_file(ui_dir!(main_glade_name!()));
     builder
-        .add_from_file(ui_dir!(dialog_glade_name!()))
+        .add_from_file(ui_dir!(filechoose_dialog_glade_name!()))
+        .unwrap();
+    builder
+        .add_from_file(ui_dir!(about_dialog_glade_name!()))
         .unwrap();
     builder
 }
@@ -145,7 +154,10 @@ fn create_gtk_builder() -> gtk::Builder {
 fn create_gtk_builder() -> gtk::Builder {
     let builder = gtk::Builder::from_string(include_str!(ui_dir!(main_glade_name!())));
     builder
-        .add_from_string(include_str!(ui_dir!(dialog_glade_name!())))
+        .add_from_string(include_str!(ui_dir!(filechoose_dialog_glade_name!())))
+        .unwrap();
+    builder
+        .add_from_string(include_str!(ui_dir!(about_dialog_glade_name!())))
         .unwrap();
     builder
 }

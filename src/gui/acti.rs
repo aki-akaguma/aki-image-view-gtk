@@ -12,6 +12,7 @@ pub(crate) fn insert_app_action_group<T: IsA<Widget>>(wdg: &T) {
     }));
     ag.add_action(&create_app_action("about", |_ac, _var| {
         gui_trace!("ACTION: app.about");
+        ope_open_about_dialog();
     }));
     wdg.insert_action_group("app", Some(&ag));
 }
@@ -24,4 +25,10 @@ fn create_app_action<F: Fn(&SimpleAction, Option<&Variant>) + 'static>(
     let _ = ac.connect_activate(f);
     //ac.set_enabled(true);
     ac
+}
+
+//----------------------------------------------------------------------
+use crate::gui::abdia::open_about;
+fn ope_open_about_dialog() {
+    open_about();
 }

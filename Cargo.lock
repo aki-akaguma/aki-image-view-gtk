@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "aki-image-view-gtk"
-version = "0.2.6"
+version = "0.2.7"
 dependencies = [
  "anyhow",
  "cairo-rs",
@@ -32,9 +32,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.43"
+version = "1.0.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28ae2b3dec75a406790005a200b1bd89785afc02517a00ca99ecfe093ee9e6cf"
+checksum = "61604a8f862e1d5c3229fdd78f8b02c68dcf73a4c4b05fd636d12240aaa242c1"
 
 [[package]]
 name = "atk"
@@ -129,15 +129,15 @@ dependencies = [
 
 [[package]]
 name = "flood-tide"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f193b6cb27c033164f6d435042aaa7c192cc293ff3640daa4648ffa422aca88"
+checksum = "bf606bd9abc64164f0d0a2f302017812968dff13d3c42597b5be8b5874291eb6"
 
 [[package]]
 name = "flood-tide-gen"
-version = "0.1.13"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b65d44c4cfa45352a93e95cb0ba505671d49f0533fd56436abafbddc62d4b1d"
+checksum = "866754df359951743e7157a0b968db434d6939e034b1ad2b18fad13b41ff0e71"
 dependencies = [
  "anyhow",
  "case",
@@ -436,18 +436,18 @@ dependencies = [
 
 [[package]]
 name = "memx"
-version = "0.1.15"
+version = "0.1.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d8c303ce1f06722871cb228a1d288ca61a2a027dea148d8135121e0c7ac429f"
+checksum = "0c2c720f4fef3f1107b4b6427b346cd8ec6b2f0d667862294ba3427b3d669c5a"
 dependencies = [
  "rustc_version 0.4.0",
 ]
 
 [[package]]
 name = "memx-cdy"
-version = "0.1.4"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d219f7c9d71f90e784f333eac8dabb9889f19531b7dbda90e2a19b3bed3f12e"
+checksum = "524a1c301384feca56f94572e21fb6c1d341deac257b8b72c815426e0112c4d0"
 dependencies = [
  "libc",
  "memx",

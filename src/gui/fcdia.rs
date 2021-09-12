@@ -16,12 +16,12 @@ const ID_PREV_IMAGE: &str = "prev_image1";
 // gtk & thread_local
 // https://gitlab.com/susurrus/gattii/-/blob/master/src/bin/gattii.rs
 thread_local!(
-    static UI_DLG_GLOBAL: RefCell<Option<(Rc<RefCell<MyFileChooser>>,i32)>> = RefCell::new(None)
+    static UI_FC_DLG_GLOBAL: RefCell<Option<(Rc<RefCell<MyFileChooser>>,i32)>> = RefCell::new(None)
 );
 
 pub(crate) fn init(builder: GtkBuilder) {
     let my_fich = Rc::new(RefCell::new(MyFileChooser::new(builder)));
-    UI_DLG_GLOBAL.with(move |global| {
+    UI_FC_DLG_GLOBAL.with(move |global| {
         *global.borrow_mut() = Some((my_fich, 0));
     });
 }
@@ -138,7 +138,7 @@ fn fc_on_selection_changed(fc: &gtk::FileChooserDialog, img: &gtk::Image) {
 }
 
 pub(crate) fn open_file_chooser() {
-    UI_DLG_GLOBAL.with(|global| {
+    UI_FC_DLG_GLOBAL.with(|global| {
         if let Some((ref my_fich, _)) = *global.borrow() {
             {
                 let mut a_my_fich = my_fich.borrow_mut();

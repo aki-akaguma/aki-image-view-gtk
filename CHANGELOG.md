@@ -2,6 +2,13 @@ aki-image-view-gtk TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.2.7 (2021-09-13)
+=====
+
+* add: `app.reload` action
+* add: `app.about` action
+* update crates: anyhow(1.0.44), flood-tide(0.2.3), flood-tide-gen(0.1.14), memx-cdy(0.1.6)
+
 0.2.6 (2021-09-10)
 =====
 
