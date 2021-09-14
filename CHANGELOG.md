@@ -2,6 +2,8 @@ aki-image-view-gtk TBD
 ===
 Unreleased changes. Release notes have not yet been written.
 
+* add: `app.help` action
+
 0.2.7 (2021-09-13)
 =====
 

@@ -71,4 +71,5 @@ assets = [
     ["README.md", "usr/share/doc/aki-image-view-gtk/", "644"],
     ["ui/Mwin.glade", "usr/share/aki-image-view-gtk/ui/", "644"],
     ["ui/Fcdia.glade", "usr/share/aki-image-view-gtk/ui/", "644"],
+    ["help/C", "usr/share/help/aki-image-view-gtk/", "644"],
 ]

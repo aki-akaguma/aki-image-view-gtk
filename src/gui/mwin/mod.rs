@@ -41,6 +41,7 @@ pub(crate) struct MyMainWin {
     tx: Sender<render_thr::RenderThreadMsg>,
     uri_s: String,
     //
+    win: gtk::ApplicationWindow,
     im: image_area::MyImageArea,
     zoom: zoom::MyZoom,
     sp: gtk::Spinner,
@@ -50,6 +51,7 @@ impl MyMainWin {
         conf_file: Rc<RefCell<ConfigFile>>,
         tx: Sender<render_thr::RenderThreadMsg>,
         builder: GtkBuilder,
+        win: gtk::ApplicationWindow,
         da: gtk::DrawingArea,
         sp: gtk::Spinner,
     ) -> Self {
@@ -68,6 +70,7 @@ impl MyMainWin {
             uri_s: "".into(),
             tx,
             //
+            win,
             im: image_area::MyImageArea::new(da_parent, da_viewport, da),
             zoom: zoom::MyZoom::new(
                 zoom_entry,
@@ -126,7 +129,7 @@ fn build_ui(
         }
     }
     //
-    let my_data = Rc::new(RefCell::new(MyMainWin::new(conf_file, tx, builder, da, sp)));
+    let my_data = Rc::new(RefCell::new(MyMainWin::new(conf_file, tx, builder, window.clone(), da, sp)));
     UI_MWIN_GLOBAL.with(move |global| {
         *global.borrow_mut() = Some((my_data, 0));
     });
@@ -196,8 +199,8 @@ pub(crate) fn app_on_activate(
 ) {
     build_ui(builder, app, tx_thr, conf_file);
     if !img_path.is_empty() {
-        let uri = format!("file:///{}", img_path);
-        acti::ope_open_uri_for_image_file(uri.as_str());
+        let uri_s = format!("file:///{}", img_path);
+        acti::ope_open_uri_for_image_file(uri_s.as_str());
     }
 }
 
@@ -205,5 +208,19 @@ pub(crate) fn app_on_activate(
 pub(crate) fn app_on_shutdown() {
     UI_MWIN_GLOBAL.with(move |global| {
         *global.borrow_mut() = None;
+    });
+}
+
+pub(crate) fn open_help() {
+    UI_MWIN_GLOBAL.with(|global| {
+        if let Some((ref my_data, _)) = *global.borrow() {
+            let win = {
+                let a_my_data = my_data.borrow();
+                a_my_data.win.clone()
+            };
+            let uri_s = format!("help:{}", "aki-image-view");
+            //let uri_s = format!("help:file://{}", "/home/hcc/src/rust/MyJam/rel-github/gui/aki-image-view-gtk/help/C/index.page");
+            let _ = gtk::show_uri_on_window(Some(&win), &uri_s, 0);
+        }
     });
 }
