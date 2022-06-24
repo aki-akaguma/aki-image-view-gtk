@@ -1,8 +1,12 @@
-aki-image-view-gtk TBD
+TBD: aki-image-view-gtk
 ===
 Unreleased changes. Release notes have not yet been written.
 
-* add: `app.help` action
+0.2.8 (2022-06-24)
+=====
+
+* update crates: gtk(0.14.3)
+* changes to edition 2021
 
 0.2.7 (2021-09-13)
 =====

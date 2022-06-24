@@ -1,6 +1,6 @@
 [package]
 name = "aki-image-view-gtk"
-version = "0.2.7"
+version = "0.2.8"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 description = """
 image view gtk gui application
@@ -9,7 +9,7 @@ keywords = ["image", "photo", "svg", "view", "gtk"]
 categories = ["gui"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 repository = "https://github.com/aki-akaguma/aki-image-view-gtk"
 
 [[bin]]
