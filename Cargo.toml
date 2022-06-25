@@ -1,6 +1,6 @@
 [package]
 name = "aki-image-view-gtk"
-version = "0.2.8"
+version = "0.2.9"
 authors = ["aki <aki.akaguma@hotmail.com>"]
 description = """
 image view gtk gui application
@@ -30,14 +30,14 @@ toml = "0.5"
 serde = "1.0"
 serde_derive = "1.0"
 
-cairo-rs = "0.14"
-gdk = "0.14"
-gdk-pixbuf = "0.14"
-glib = "0.14"
-gio = "0.14"
+cairo-rs = "0.15"
+gdk = "0.15"
+gdk-pixbuf = "0.15"
+glib = "0.15"
+gio = "0.15"
 
 [dependencies.gtk]
-version = "0.14"
+version = "0.15"
 default-features = false
 features = ["v3_24"]
 

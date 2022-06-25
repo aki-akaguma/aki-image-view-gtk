@@ -129,7 +129,14 @@ fn build_ui(
         }
     }
     //
-    let my_data = Rc::new(RefCell::new(MyMainWin::new(conf_file, tx, builder, window.clone(), da, sp)));
+    let my_data = Rc::new(RefCell::new(MyMainWin::new(
+        conf_file,
+        tx,
+        builder,
+        window.clone(),
+        da,
+        sp,
+    )));
     UI_MWIN_GLOBAL.with(move |global| {
         *global.borrow_mut() = Some((my_data, 0));
     });

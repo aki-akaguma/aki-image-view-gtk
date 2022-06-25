@@ -5,7 +5,7 @@ use crate::conf::conf_file::ConfigFile;
 use crate::conf::CmdOptConf;
 
 use gio::prelude::{ApplicationExt, ApplicationExtManual};
-use gtk::prelude::BuilderExt;
+use gtk::prelude::{BuilderExt, BuilderExtManual};
 
 use std::cell::RefCell;
 use std::rc::Rc;

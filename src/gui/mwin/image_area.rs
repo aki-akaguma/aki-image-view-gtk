@@ -17,6 +17,7 @@ use super::MyMainWin;
 use super::UI_MWIN_GLOBAL;
 use crate::gui::guii::Size2Di;
 
+//const NONE_CANCELLABLE: Option<&impl IsA<Cancellable>> = None;
 const MAX_PIXELS: i32 = 128 * 1024 * 1024 / 4;
 
 pub(crate) struct MyImageArea {
@@ -316,12 +317,12 @@ fn setup_image_info(bytes: &GlibBytes) {
     let (width, height) = {
         let input_stream = gio::MemoryInputStream::from_bytes(bytes);
         #[rustfmt::skip]
-        let r = GdkPixbuf::from_stream::<_, gio::Cancellable>(&input_stream, None);
+        let r = GdkPixbuf::from_stream(&input_stream, None::<&gio::Cancellable>);
         match r {
             Ok(pb) => (pb.width(), pb.height()),
             Err(err) => {
-                eprintln!("LOAD ERROR: {}", err.to_string());
-                gui_trace!("setup_image_info(): {}", err.to_string());
+                eprintln!("LOAD ERROR: {}", err);
+                gui_trace!("setup_image_info(): {}", err);
                 return;
             }
         }
@@ -376,13 +377,13 @@ pub(crate) fn render_image_on_thread(bytes: &GlibBytes, iwh: Size2Di) {
     let pixbuf = {
         let input_stream = gio::MemoryInputStream::from_bytes(bytes);
         #[rustfmt::skip]
-        let r = GdkPixbuf::from_stream_at_scale::<_, gio::Cancellable>(
-            &input_stream, iwh.w(), -1, true, None);
+        let r = GdkPixbuf::from_stream_at_scale(
+            &input_stream, iwh.w(), -1, true, None::<&gio::Cancellable>);
         match r {
             Ok(pb) => pb,
             Err(err) => {
-                eprintln!("LOAD ERROR: {}", err.to_string());
-                gui_trace!("render_image_on_thread(): {}", err.to_string());
+                eprintln!("LOAD ERROR: {}", err);
+                gui_trace!("render_image_on_thread(): {}", err);
                 return;
             }
         }
@@ -433,7 +434,7 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
     // uri (smb:// ***) also correspond
     gui_trace!("open_uri_for_image_file(): '{}'", uri_str);
     let file = gio::File::for_uri(uri_str);
-    file.load_contents_async::<gio::Cancellable, _>(None, move |r| match r {
+    file.load_contents_async(None::<&gio::Cancellable>, move |r| match r {
         Ok((bytes_vec_u8, _opt_etag_out)) => {
             gui_trace!("etag_out: {:?}", _opt_etag_out);
             UI_MWIN_GLOBAL.with(|global| {
@@ -451,7 +452,7 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
             });
         }
         Err(err) => {
-            eprintln!("LOAD ERROR: {}: {}", err.to_string(), uri);
+            eprintln!("LOAD ERROR: {}: {}", err, uri);
         }
     });
 }

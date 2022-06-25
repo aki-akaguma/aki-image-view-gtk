@@ -2,6 +2,11 @@ TBD: aki-image-view-gtk
 ===
 Unreleased changes. Release notes have not yet been written.
 
+0.2.9 (2022-06-25)
+=====
+
+* update crates: gtk(0.15.5)
+
 0.2.8 (2022-06-24)
 =====
 
