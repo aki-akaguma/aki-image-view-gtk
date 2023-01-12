@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 * reformat `CHANGELOG.md`
+* update depends: flood-tide(0.2.8), flood-tide-gen(0.1.19), memx-cdy(0.1.10)
+* update depends: anyhow(1.0.68), toml(0.5.10)
+* update depends: serde(1.0.152), serde_derive(1.0.152)
+* update depends: cairo-rs(0.15.12), gio(0.15.12), glib(0.15.12)
 
 
 ## [0.2.9] (2022-06-25)
