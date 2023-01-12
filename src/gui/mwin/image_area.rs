@@ -317,8 +317,8 @@ fn setup_image_info(bytes: &GlibBytes) {
         match r {
             Ok(pb) => (pb.width(), pb.height()),
             Err(err) => {
-                eprintln!("LOAD ERROR: {}", err);
-                gui_trace!("setup_image_info(): {}", err);
+                eprintln!("LOAD ERROR: {err}");
+                gui_trace!("setup_image_info(): {err}");
                 return;
             }
         }
@@ -378,8 +378,8 @@ pub(crate) fn render_image_on_thread(bytes: &GlibBytes, iwh: Size2Di) {
         match r {
             Ok(pb) => pb,
             Err(err) => {
-                eprintln!("LOAD ERROR: {}", err);
-                gui_trace!("render_image_on_thread(): {}", err);
+                eprintln!("LOAD ERROR: {err}");
+                gui_trace!("render_image_on_thread(): {err}");
                 return;
             }
         }
@@ -448,7 +448,7 @@ pub(crate) fn open_uri_for_image_file(uri_str: &str) {
             });
         }
         Err(err) => {
-            eprintln!("LOAD ERROR: {}: {}", err, uri);
+            eprintln!("LOAD ERROR: {err}: {uri}");
         }
     });
 }

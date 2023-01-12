@@ -143,7 +143,7 @@ pub(crate) fn open_file_chooser() {
             {
                 let mut a_my_fich = my_fich.borrow_mut();
                 if let Some(filename) = a_my_fich.run_open_file() {
-                    let uri = format!("file:///{}", filename);
+                    let uri = format!("file:///{filename}");
                     acti::ope_open_uri_for_image_file(uri.as_str());
                 }
             }

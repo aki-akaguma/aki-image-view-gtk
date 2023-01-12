@@ -85,7 +85,7 @@ impl MyZoom {
 
 fn format_zoom_value(value: f32) -> String {
     let zoom_percent = ((value * 1000.0 + 0.5).floor()) * 0.1;
-    format!("{:.1}%", zoom_percent)
+    format!("{zoom_percent:.1}%")
 }
 
 //

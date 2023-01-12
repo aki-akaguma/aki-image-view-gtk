@@ -61,11 +61,11 @@ fn main() {
         Err(errs) => {
             for err in errs.iter().take(1) {
                 if err.is_help() || err.is_version() {
-                    println!("{}", err);
+                    println!("{err}");
                     std::process::exit(0);
                 }
             }
-            eprintln!("{}\n{}", errs, TRY_HELP_MSG);
+            eprintln!("{errs}\n{TRY_HELP_MSG}");
             std::process::exit(1);
         }
     };

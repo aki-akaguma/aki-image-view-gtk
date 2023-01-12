@@ -22,8 +22,8 @@ pub fn run(conf: &CmdOptConf) -> anyhow::Result<()> {
         let conf_file = crate::conf::conf_file::ConfigFile::load_from_config_file(c_path);
         if conf_file.is_err() {
             if let Err(ref err) = conf_file.err {
-                eprintln!("ConfigFile: {}", err);
-                eprintln!("ConfigFile: {:?}", err);
+                eprintln!("ConfigFile: {err}");
+                eprintln!("ConfigFile: {err:?}");
             }
         }
         Rc::new(RefCell::new(conf_file))

@@ -184,8 +184,8 @@ fn build_ui(
                 let res = v_conf_file.save_to_config_file();
                 if res.is_err() {
                     let err = res.err().unwrap();
-                    eprintln!("{}", err);
-                    eprintln!("{:?}", err);
+                    eprintln!("{err}");
+                    eprintln!("{err:?}");
                 }
             }
         });
@@ -206,7 +206,7 @@ pub(crate) fn app_on_activate(
 ) {
     build_ui(builder, app, tx_thr, conf_file);
     if !img_path.is_empty() {
-        let uri_s = format!("file:///{}", img_path);
+        let uri_s = format!("file:///{img_path}");
         acti::ope_open_uri_for_image_file(uri_s.as_str());
     }
 }

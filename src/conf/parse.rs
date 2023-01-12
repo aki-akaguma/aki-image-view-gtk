@@ -29,7 +29,7 @@ fn version_message(_program: &str) -> String {
 #[rustfmt::skip]
 fn usage_message(program: &str) -> String {
     let usage1 = format!("  {} {}", program, "[options]");
-    format!("Usage:\n{}\n", usage1)
+    format!("Usage:\n{usage1}\n")
 }
 
 #[rustfmt::skip]

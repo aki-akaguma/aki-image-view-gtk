@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * update depends: cairo-rs(0.16.7), gdk(0.16.2), gdk-pixbuf(0.16.7)
 * update depends: gio(0.16.7), glib(0.16.7)
 
+### Fixed
+* clippy: uninlined_format_args
+
 
 ## [0.2.9] (2022-06-25)
 ### Changed
