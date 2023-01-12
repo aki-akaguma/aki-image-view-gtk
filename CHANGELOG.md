@@ -1,65 +1,81 @@
-TBD: aki-image-view-gtk
-===
-Unreleased changes. Release notes have not yet been written.
+# Changelog: aki-image-view-gtk
 
-0.2.9 (2022-06-25)
-=====
+All notable changes to this project will be documented in this file.
 
-* update crates: gtk(0.15.5)
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-0.2.8 (2022-06-24)
-=====
+## [Unreleased] *
+### Changed
+* reformat `CHANGELOG.md`
 
-* update crates: gtk(0.14.3)
+
+## [0.2.9] (2022-06-25)
+### Changed
+* update depends: gtk(0.15.5)
+
+## [0.2.8] (2022-06-24)
+### Changed
+* update depends: gtk(0.14.3)
 * changes to edition 2021
 
-0.2.7 (2021-09-13)
-=====
+## [0.2.7] (2021-09-13)
+### Added
+* action: `app.reload`
+* action: `app.about`
 
-* add: `app.reload` action
-* add: `app.about` action
-* update crates: anyhow(1.0.44), flood-tide(0.2.3), flood-tide-gen(0.1.14), memx-cdy(0.1.6)
+### Changed
+* update depends: anyhow(1.0.44), flood-tide(0.2.3), flood-tide-gen(0.1.14), memx-cdy(0.1.6)
 
-0.2.6 (2021-09-10)
-=====
-
+## [0.2.6] (2021-09-10)
+### Changed
 * refactoring source code
 
-0.2.5 (2021-09-02)
-=====
+## [0.2.5] (2021-09-02)
+### Added
+* gio action support
+* main menu.
 
-* chg: the menu ui was refactored.
-* add: gio action support
-* chg: buttons of ui to stock buttons.
-* add: main menu.
+### Changed
+* the menu ui was refactored.
+* buttons of ui to stock buttons.
 
-0.2.4 (2021-08-22)
-=====
-
+## [0.2.4] (2021-08-22)
+### Changed
 * refactoring source code
 
-0.2.3 (2021-08-21)
-=====
+## [0.2.3] (2021-08-21)
+### Changed
+* separate ImVm.glade to Dialog.glade
 
-* i separate ImVm.glade to Dialog.glade
-* fix: a render thread loop bug
+### Fixed
+* a render thread loop bug
 
-0.2.2 (2021-08-19)
-=====
+## [0.2.2] (2021-08-19)
+### Added
+* a support of a image path into command arguments
+* a file chooser dialog
 
-* add: a support of a image path into command arguments
-* add: a file chooser dialog
+## [0.2.1] (2021-08-16)
+### Fixed
+* deb's ui/Menu.glade
 
-0.2.1 (2021-08-16)
-=====
+## [0.2.0] (2021-08-16)
+### Changed
+* a lot.
 
-* fix: deb's ui/Menu.glade
+## [0.1.0] (2021-07-09)
+* first commit
 
-0.2.0 (2021-08-16)
-=====
-
-* i changed a lot.
-
-0.1.0 (2021-07-09)
-=====
-first commit
+[Unreleased]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.9..HEAD
+[0.2.9]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.8..v0.2.9
+[0.2.8]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.7..v0.2.8
+[0.2.7]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.6..v0.2.7
+[0.2.6]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.5..v0.2.6
+[0.2.5]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.4..v0.2.5
+[0.2.4]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.3..v0.2.4
+[0.2.3]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.2..v0.2.3
+[0.2.2]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.1..v0.2.2
+[0.2.1]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.2.0..v0.2.1
+[0.2.0]: https://github.com/aki-akaguma/aki-image-view-gtk/compare/v0.1.0..v0.2.0
+[0.1.0]: https://github.com/aki-akaguma/aki-image-view-gtk/releases/tag/v0.1.0
