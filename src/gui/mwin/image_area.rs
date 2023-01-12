@@ -234,15 +234,11 @@ fn da_on_draw(widget: &gtk::DrawingArea, cr: &cairo::Context, my_data: &Rc<RefCe
                     da_ih as f64 / pb_ih as f64
                 };
                 #[rustfmt::skip]
-                cr.transform(cairo::Matrix {
-                    xx: n, yx: 0.0, xy: 0.0, yy: n, x0: 0.0, y0: 0.0
-                });
+                cr.transform(cairo::Matrix::new(n, 0.0, 0.0, n, 0.0, 0.0));
                 //gui_trace!("da_on_drow()::full scale {:.3}::{}x{},{}x{}", n, da_iw, da_ih, pb_iw, pb_ih);
             } else {
                 #[rustfmt::skip]
-                cr.transform(cairo::Matrix {
-                    xx: 1.0, yx: 0.0, xy: 0.0, yy: 1.0, x0: 0.0, y0: 0.0
-                });
+                cr.transform(cairo::Matrix::new(1.0, 0.0, 0.0, 1.0, 0.0, 0.0));
                 //gui_trace!("da_on_drow()::full {}x{},{}x{}", da_iw, da_ih, pb_iw, pb_ih);
             }
             cr.set_source_pixbuf(pixbuf, 0.0, 0.0);

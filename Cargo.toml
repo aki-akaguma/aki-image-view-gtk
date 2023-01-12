@@ -30,14 +30,14 @@ toml = "0.5"
 serde = "1.0"
 serde_derive = "1.0"
 
-cairo-rs = "0.15"
-gdk = "0.15"
-gdk-pixbuf = "0.15"
-glib = "0.15"
-gio = "0.15"
+cairo-rs = "0.16"
+gdk = "0.16"
+gdk-pixbuf = "0.16"
+glib = "0.16"
+gio = "0.16"
 
 [dependencies.gtk]
-version = "0.15"
+version = "0.16"
 default-features = false
 features = ["v3_24"]
 
