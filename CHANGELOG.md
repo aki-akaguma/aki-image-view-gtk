@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 * refactored `Makefile`
 
+### Removed
+* `COPYING`
+
+### Fixed
+* `LICENSE-APACHE`, `LICENSE-MIT`
+
 
 ## [0.2.10] (2023-01-12)
 ### Added
