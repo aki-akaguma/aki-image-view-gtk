@@ -260,8 +260,7 @@ fn da_on_draw(widget: &gtk::DrawingArea, cr: &cairo::Context, my_data: &Rc<RefCe
             };
             if subpb_w > 0 && subpb_h > 0 {
                 //gui_trace!("da_on_drow()::new_subpixbuf() {}x{},{}x{}", subpb_x, subpb_y, subpb_w, subpb_h);
-                let subpixbuf = pixbuf
-                    .new_subpixbuf(subpb_x, subpb_y, subpb_w, subpb_h);
+                let subpixbuf = pixbuf.new_subpixbuf(subpb_x, subpb_y, subpb_w, subpb_h);
                 cr.set_source_pixbuf(&subpixbuf, subpb_x as f64, subpb_y as f64);
             }
         }
