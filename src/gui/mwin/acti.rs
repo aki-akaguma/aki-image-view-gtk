@@ -48,7 +48,7 @@ fn create_mwin_action_state_bool<F: Fn(&SimpleAction, Option<&Variant>) + 'stati
 ) -> SimpleAction {
     let ty_ = bool::static_variant_type();
     let va_ = true.to_variant();
-    let ac = SimpleAction::new_stateful(name, Some(&ty_), &va_);
+    let ac = SimpleAction::new_stateful(name, Some(&ty_), va_);
     let _ = ac.connect_activate(f);
     ac
 }

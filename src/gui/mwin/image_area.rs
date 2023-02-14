@@ -261,8 +261,7 @@ fn da_on_draw(widget: &gtk::DrawingArea, cr: &cairo::Context, my_data: &Rc<RefCe
             if subpb_w > 0 && subpb_h > 0 {
                 //gui_trace!("da_on_drow()::new_subpixbuf() {}x{},{}x{}", subpb_x, subpb_y, subpb_w, subpb_h);
                 let subpixbuf = pixbuf
-                    .new_subpixbuf(subpb_x, subpb_y, subpb_w, subpb_h)
-                    .unwrap();
+                    .new_subpixbuf(subpb_x, subpb_y, subpb_w, subpb_h);
                 cr.set_source_pixbuf(&subpixbuf, subpb_x as f64, subpb_y as f64);
             }
         }
@@ -385,14 +384,7 @@ pub(crate) fn render_image_on_thread(bytes: &GlibBytes, iwh: Size2Di) {
         }
     };
     //
-    let bytes = match pixbuf.read_pixel_bytes() {
-        Some(bytes) => bytes,
-        None => {
-            eprintln!("LOAD ERROR: pixbuf.read_pixel_bytes()");
-            gui_trace!("render_image_on_thread(): pixbuf.read_pixel_bytes()");
-            return;
-        }
-    };
+    let bytes = pixbuf.read_pixel_bytes();
     let colorspace = pixbuf.colorspace();
     let has_alpha = pixbuf.has_alpha();
     let bits_per_sample = pixbuf.bits_per_sample();
