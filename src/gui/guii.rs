@@ -176,3 +176,61 @@ impl std::convert::From<(Point2Di, Size2Di)> for Rect2Di {
         Rect2Di::new(a.0.x(), a.0.y(), a.1.w(), a.1.h())
     }
 }
+
+#[cfg(test)]
+mod test_guii {
+    use super::*;
+    //
+    #[test]
+    fn test_2di_1() {
+        let pt = Point2Di::new(10, 20);
+        assert_eq!(pt.x(), 10);
+        assert_eq!(pt.y(), 20);
+        assert_eq!(format!("{pt}"), "+10+20");
+        //
+        let sz = Size2Di::new(30, 40);
+        assert_eq!(sz.w(), 30);
+        assert_eq!(sz.h(), 40);
+        assert_eq!(format!("{sz}"), "30x40");
+        //
+        let rt = Rect2Di::new(50, 60, 70, 80);
+        assert_eq!(rt.x(), 50);
+        assert_eq!(rt.y(), 60);
+        assert_eq!(rt.w(), 70);
+        assert_eq!(rt.h(), 80);
+        assert_eq!(format!("{rt}"), "70x80+50+60");
+    }
+    #[test]
+    fn test_2di_convert() {
+        let pt: Point2Di = (10, 20).into();
+        assert_eq!(format!("{pt}"), "+10+20");
+        let pt: Point2Di = (10.0f32, 20.0f32).into();
+        assert_eq!(format!("{pt}"), "+10+20");
+        let pt: Point2Di = (10.0f64, 20.0f64).into();
+        assert_eq!(format!("{pt}"), "+10+20");
+        //
+        let sz: Size2Di = (30, 40).into();
+        assert_eq!(format!("{sz}"), "30x40");
+        let sz: Size2Di = (30.0f32, 40.0f32).into();
+        assert_eq!(format!("{sz}"), "30x40");
+        let sz: Size2Di = (30.0f64, 40.0f64).into();
+        assert_eq!(format!("{sz}"), "30x40");
+        //
+        let rt: Rect2Di = (50, 60, 70, 80).into();
+        assert_eq!(format!("{rt}"), "70x80+50+60");
+        let rt: Rect2Di = (50.0f32, 60.0f32, 70.0f32, 80.0f32).into();
+        assert_eq!(format!("{rt}"), "70x80+50+60");
+        let rt: Rect2Di = (50.0f64, 60.0f64, 70.0f64, 80.0f64).into();
+        assert_eq!(format!("{rt}"), "70x80+50+60");
+        //
+        let rt: Rect2Di = ((50, 60), (70, 80)).into();
+        assert_eq!(format!("{rt}"), "70x80+50+60");
+        let rt: Rect2Di = ((50.0f32, 60.0f32), (70.0f32, 80.0f32)).into();
+        assert_eq!(format!("{rt}"), "70x80+50+60");
+        let rt: Rect2Di = ((50.0f64, 60.0f64), (70.0f64, 80.0f64)).into();
+        assert_eq!(format!("{rt}"), "70x80+50+60");
+        //
+        let rt: Rect2Di = (pt, sz).into();
+        assert_eq!(format!("{rt}"), "30x40+10+20");
+    }
+}
