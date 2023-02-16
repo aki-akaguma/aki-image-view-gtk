@@ -178,7 +178,7 @@ pub(crate) fn setup_connect(
     }));
     //
     da.connect_size_allocate(clone!(@strong my_data => move |_widget, _alc| {
-        gui_trace!("da.connect_size_allocate(): {}x{}", _alc.width, _alc.height);
+        gui_trace!("da.connect_size_allocate(): {}x{}", _alc.width(), _alc.height());
         check_and_do_zoom_fit(my_data.clone());
     }));
     scrw.connect_size_allocate(clone!(@strong my_data => move |_widget, _alc| {
@@ -368,6 +368,9 @@ fn spawn_render_image_0(my_data: Rc<RefCell<MyMainWin>>) {
 
 pub(crate) fn render_image_on_thread(bytes: &GlibBytes, iwh: Size2Di) {
     // In the case of SVG, it is rendered here.
+    // GdkPixbuf supports many file format:
+    //      ani, bmp, GdkPixdata, gif, icns, ico, jpeg, png, pnm,
+    //      qtif, svg, tga, tiff, wmf, xbm, xpm
     let pixbuf = {
         let input_stream = gio::MemoryInputStream::from_bytes(bytes);
         #[rustfmt::skip]
